@@ -316,12 +316,15 @@
   // ---------------------------------------------------------------- слова и интервальное повторение
   let ALL = [];
   const BY_ID = new Map();
+  const BY_ES = new Map();
   function buildCards() {
-    ALL = []; BY_ID.clear();
+    ALL = []; BY_ID.clear(); BY_ES.clear();
     const add = (deck, w) => {
       const c = { id: deck + "|" + w[0], deck, es: w[0], ru: w[1], exEs: w[2] || "", exRu: w[3] || "", note: w[4] || "" };
       if (BY_ID.has(c.id)) return;
       ALL.push(c); BY_ID.set(c.id, c);
+      if (!BY_ES.has(c.es)) BY_ES.set(c.es, []);
+      BY_ES.get(c.es).push(c);
     };
     DECKS.forEach((d) => d.words.forEach((w) => add(d.id, w)));
     S.custom.forEach((w) => add("custom", w));
@@ -352,16 +355,21 @@
     const m = Math.round(i / 30);
     return m + " " + plural(m, "месяц", "месяца", "месяцев");
   }
+  // Одно и то же слово может стоять в нескольких темах: у «близнецов» общее расписание повторений
+  const twins = (id) => { const c = BY_ID.get(id); return c ? (BY_ES.get(c.es) || [c]) : []; };
   function grade(id, g) {
     const old = S.cards[id];
     const n = nextInterval(old, g);
     const t = dayKey();
-    S.cards[id] = { i: n.i, e: n.e, d: addDays(t, n.i), r: (old ? old.r : 0) + 1, l: (old ? old.l : 0) + (g === 0 ? 1 : 0), s: old ? old.s : t };
+    const st = { i: n.i, e: n.e, d: addDays(t, n.i), r: (old ? old.r : 0) + 1, l: (old ? old.l : 0) + (g === 0 ? 1 : 0), s: old ? old.s : t };
+    for (const c of twins(id)) S.cards[c.id] = Object.assign({}, st);
   }
+  // Оставляет по одной карточке на каждое испанское слово
+  function uniqueByEs(list) { const seen = new Set(); return list.filter((c) => (seen.has(c.es) ? false : seen.add(c.es))); }
   function counts() {
     const t = dayKey();
     let due = 0, freshAvail = 0;
-    for (const c of ALL) {
+    for (const c of uniqueByEs(ALL)) {
       if (S.cards[c.id]) { if (S.cards[c.id].d <= t) due++; }
       else if (enabledDeck(c.deck)) freshAvail++;
     }
@@ -605,10 +613,10 @@
     const topLearned = top.reduce((a, d) => a + deckCounts(d.id).learned, 0);
     return '<header class="page-head"><div><h1>Слова</h1><p class="sub">Vocabulario para la mudanza</p></div>' +
       '<div class="row"><button class="btn" data-act="cards-start"' + (c.due + c.newToday ? "" : " disabled") + ">Учить: " + c.due + " повторить · " + c.newToday + " новых</button></div></header>" +
-      '<p class="muted">Новые слова приходят по ' + S.settings.newPerDay + " в день поровну из топ-500 и из тем для переезда — из тех, у которых включён переключатель «В плане». Карточку, которую вы вспомнили легко, приложение покажет нескоро; трудную — снова скоро.</p>" +
+      '<p class="muted">Новые слова приходят по ' + S.settings.newPerDay + " в день поровну из топ-1000 и из тем для переезда — из тех, у которых включён переключатель «В плане». Карточку, которую вы вспомнили легко, приложение покажет нескоро; трудную — снова скоро.</p>" +
       '<div class="legend"><span class="l1">выучено (интервал от 3 недель)</span><span class="l2">в процессе</span><span>не начато</span></div>' +
-      '<div class="sec-head"><h2 class="sec">Топ-500 самых употребительных слов</h2><span class="muted small num">' + topLearned + " / 500 выучено</span></div>" +
-      '<p class="muted small">Эти 500 слов покрывают большую часть повседневной речи. Отдел 1 — самые частые слова, дальше — глаголы, существительные, прилагательные и наречия, связки и числа.</p>' +
+      '<div class="sec-head"><h2 class="sec">Топ-1000 самых употребительных слов</h2><span class="muted small num">' + topLearned + " / " + top.reduce((a, d) => a + d.words.length, 0) + " выучено</span></div>" +
+      '<p class="muted small">Тысяча самых частых слов покрывает около 80% повседневной речи. Отделы 1–5 — основа: самые частые слова, глаголы, существительные, прилагательные и связки. Отделы 6–10 — следующий уровень: бытовые глаголы, вещи и места, люди и чувства, описания и живые разговорные выражения со сленгом.</p>' +
       '<div class="grid-2">' + top.map(deckCard).join("") + "</div>" +
       '<h2 class="sec">Темы для переезда</h2>' +
       '<div class="grid-2">' + themes.map(deckCard).join("") + "</div>" +
@@ -666,9 +674,9 @@
     opts = opts || {};
     const t = dayKey();
     const inDeck = (c) => !opts.deck || c.deck === opts.deck;
-    const due = shuffle(ALL.filter((c) => inDeck(c) && isDue(c.id, t)));
+    const due = shuffle(uniqueByEs(ALL.filter((c) => inDeck(c) && isDue(c.id, t))));
     let nNew = opts.extraNew != null ? opts.extraNew : counts().newToday;
-    const freshAll = ALL.filter((c) => inDeck(c) && !S.cards[c.id] && (opts.deck || enabledDeck(c.deck)));
+    const freshAll = uniqueByEs(ALL.filter((c) => inDeck(c) && !S.cards[c.id] && (opts.deck || enabledDeck(c.deck))));
     // Без выбранной темы новые слова чередуются: одно из топ-500, одно из тем для переезда
     const fresh = opts.deck ? freshAll.slice(0, nNew) : interleave(freshAll.filter((c) => isTop(c.deck)), freshAll.filter((c) => !isTop(c.deck))).slice(0, nNew);
     if (opts.onlyNew) due.length = 0;
@@ -951,7 +959,7 @@
         body += '<div class="conj-verb"><span class="es">' + esc(it.v.inf) + '</span><span class="muted">' + esc(it.v.ru) + "</span></div>" +
           '<div class="row"><span class="chip acc">' + esc(tn.es) + '</span><span class="chip">' + esc(tn.ru) + '</span></div><p class="conj-person">' + esc(it.persons[it.p]) + " …</p>";
       }
-      body += '<form class="stack" data-form="answer"><input type="text" class="answer-input" id="ans" lang="es" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="' + (it.t === "conj" && /perf|cont|irA/.test(it.tense) ? "полностью, например: he hablado" : "ваш ответ") + '" data-autofocus>' +
+      body += '<form class="stack" data-form="answer"><input type="text" class="answer-input" id="ans" lang="es" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="' + (it.t === "conj" && /perf|plusc|cont|irA/.test(it.tense) ? "полностью, например: he hablado" : "ваш ответ") + '" data-autofocus>' +
         keysHTML() + '<div class="row"><button class="btn">Проверить <kbd>Enter</kbd></button><button type="button" class="btn ghost" data-act="dunno">Не знаю</button></div></form>';
     } else if (it.t === "build") {
       const used = new Set(P.built);

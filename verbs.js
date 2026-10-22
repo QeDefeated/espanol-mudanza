@@ -15,9 +15,11 @@
     { id: "pret", es: "Pretérito indefinido", ru: "Прошедшее законченное", hint: "hablé — я сказал (один раз, ayer)" },
     { id: "impf", es: "Pretérito imperfecto", ru: "Прошедшее длительное", hint: "hablaba — я говорил (обычно, фон)" },
     { id: "perf", es: "Pretérito perfecto", ru: "Недавнее прошлое", hint: "he hablado — я (уже) сказал" },
+    { id: "plusc", es: "Pluscuamperfecto", ru: "Предпрошедшее", hint: "había hablado — я уже сказал (до того)" },
     { id: "fut", es: "Futuro simple", ru: "Будущее время", hint: "hablaré — я скажу" },
     { id: "cond", es: "Condicional", ru: "Условное («бы»)", hint: "hablaría — я бы сказал" },
     { id: "subj", es: "Presente de subjuntivo", ru: "Субхунтив", hint: "que hable — чтобы я сказал" },
+    { id: "subjImp", es: "Imperfecto de subjuntivo", ru: "Субхунтив прошедшего", hint: "si hablara — если бы я говорил" },
     { id: "imp", es: "Imperativo", ru: "Повелительное", hint: "habla / hable / hablen — говори / говорите" }
   ];
 
@@ -201,6 +203,17 @@
     perf(v) {
       const p = forms.part(v);
       return ["he", "has", "ha", "hemos", "han"].map((a) => a + " " + p);
+    },
+    plusc(v) {
+      const p = forms.part(v);
+      return ["había", "habías", "había", "habíamos", "habían"].map((a) => a + " " + p);
+    },
+    // От формы ellos претерита: hablaron → hablara; в nosotros ударение: habláramos
+    subjImp(v) {
+      const st = forms.pret(v)[4].slice(0, -3);
+      const acc = { a: "á", e: "é", i: "í", o: "ó", u: "ú" };
+      const stAcc = st.replace(/[aeiou](?=[^aeiou]*$)/, (m) => acc[m]);
+      return [st + "ra", st + "ras", st + "ra", stAcc + "ramos", st + "ran"];
     },
     cont(v) {
       const g = forms.ger(v);

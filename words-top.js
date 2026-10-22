@@ -1,8 +1,8 @@
-// Топ-500 самых употребительных слов испанского языка, 5 отделов по 100.
+// Топ-1000, часть 1: слова 1–500, отделы 1–5 (продолжение — words-top2.js).
 // Порядок внутри отдела — примерно по частоте. Формат: [испанский, русский, пример, перевод примера, заметка?]
 window.ES_DECKS = (window.ES_DECKS || []).concat([
   {
-    id: "top1", group: "top", title: "Топ-500 · отдел 1", es: "Las 100 palabras más usadas",
+    id: "top1", group: "top", title: "Топ-1000 · отдел 1", es: "Las 100 palabras más usadas",
     words: [
       ["el, la, los, las", "определённый артикль", "El banco y la farmacia están cerca.", "Банк и аптека рядом."],
       ["de", "из; (родительный падеж)", "Soy de Rusia. Es la casa de mi amigo.", "Я из России. Это дом моего друга."],
@@ -107,7 +107,7 @@ window.ES_DECKS = (window.ES_DECKS || []).concat([
     ]
   },
   {
-    id: "top2", group: "top", title: "Топ-500 · отдел 2", es: "Verbos y palabras clave",
+    id: "top2", group: "top", title: "Топ-1000 · отдел 2", es: "Verbos y palabras clave",
     words: [
       ["el mundo", "мир", "El mundo es pequeño.", "Мир тесен."],
       ["el país", "страна", "Me gusta mucho este país.", "Мне очень нравится эта страна."],
@@ -212,7 +212,7 @@ window.ES_DECKS = (window.ES_DECKS || []).concat([
     ]
   },
   {
-    id: "top3", group: "top", title: "Топ-500 · отдел 3", es: "Sustantivos frecuentes",
+    id: "top3", group: "top", title: "Топ-1000 · отдел 3", es: "Sustantivos frecuentes",
     words: [
       ["la mujer", "женщина; жена", "Esa mujer es doctora.", "Та женщина — врач."],
       ["el trabajo", "работа", "Me gusta mi trabajo.", "Мне нравится моя работа."],
@@ -317,7 +317,7 @@ window.ES_DECKS = (window.ES_DECKS || []).concat([
     ]
   },
   {
-    id: "top4", group: "top", title: "Топ-500 · отдел 4", es: "Adjetivos y adverbios",
+    id: "top4", group: "top", title: "Топ-1000 · отдел 4", es: "Adjetivos y adverbios",
     words: [
       ["bueno", "хороший", "Es un buen trabajo.", "Это хорошая работа.", "Перед существительным м. р.: buen."],
       ["malo", "плохой", "Hoy fue un mal día.", "Сегодня был плохой день.", "Перед существительным м. р.: mal."],
@@ -422,7 +422,7 @@ window.ES_DECKS = (window.ES_DECKS || []).concat([
     ]
   },
   {
-    id: "top5", group: "top", title: "Топ-500 · отдел 5", es: "Pronombres, conectores y números",
+    id: "top5", group: "top", title: "Топ-1000 · отдел 5", es: "Pronombres, conectores y números",
     words: [
       ["tú", "ты", "¿Y tú?", "А ты?"],
       ["usted", "вы (вежливо, одному)", "¿Usted es el dueño?", "Вы хозяин?"],
