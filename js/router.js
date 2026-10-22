@@ -17,8 +17,8 @@
 
   App.ui = {
     route: "today",
-    UI: { deck: null, lesson: null, talk: { mode: "list", id: null }, confirmReset: false, gen: null, quiz: {}, search: "", ob: null, prefill: null },
-    Cards: { active: false, queue: [], pos: 0, shown: false, done: 0, again: 0, deck: null, front: "es" },
+    UI: { deck: null, pics: null, picHide: false, lesson: null, talk: { mode: "list", id: null }, confirmReset: false, gen: null, quiz: {}, search: "", ob: null, prefill: null },
+    Cards: { active: false, queue: [], pos: 0, shown: false, done: 0, again: 0, deck: null, pics: false, hint: false, front: "es" },
     P: { active: false, kind: null, items: [], i: 0, ok: 0, answered: false, wrong: [], built: [], dialog: null },
     Chat: { scenario: "free", turns: [], msgs: [], busy: false, ctl: null, hints: null, hintBusy: false },
     Dlg: { hideMine: false, showTr: false, playing: -1, revealed: new Set(), resp: null }
@@ -31,7 +31,7 @@
     if (Cards.active) return ["cards"];
     if (P.active) return ["practice", "session"];
     switch (ui.route) {
-      case "words": return ["words", UI.deck ? "deck" : "list"];
+      case "words": return ["words", UI.deck ? "deck" : UI.pics ? "pics" : "list"];
       case "grammar": return ["grammar", UI.lesson ? "lesson" : "list"];
       case "practice": return ["practice", "home"];
       case "talk": return UI.talk.mode === "chat" ? ["chat"] : ["dialogs", UI.talk.mode === "dialog" ? "dialog" : "list"];
@@ -71,7 +71,7 @@
     if (!ROUTES.includes(r)) r = "today";
     ui.route = r;
     if (!keepSub) {
-      if (r === "words") ui.UI.deck = null;
+      if (r === "words") { ui.UI.deck = null; ui.UI.pics = null; }
       if (r === "grammar") ui.UI.lesson = null;
       if (r === "talk") ui.UI.talk = { mode: "list", id: null };
     }

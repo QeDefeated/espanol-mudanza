@@ -1,4 +1,4 @@
-// Раздел «Слова»: темы, топ-1500, поиск, своя тема «Мои слова», подбор слов с Claude.
+// Раздел «Слова»: темы, топ-1500, слова в картинках, поиск, своя тема «Мои слова», подбор слов с Claude.
 (function (App) {
   "use strict";
   const { $, $$, esc, plural, dayKey, rank, stripAcc, norm, ARTICLE, keysHTML, loadingHTML, toast } = App.util;
@@ -6,7 +6,8 @@
   const D = App.D;
   const srs = App.srs, goals = App.goals;
   const ui = App.ui;
-  const { sayBtn } = App.audio;
+  const { sayBtn, speak } = App.audio;
+  const picSm = (c) => (c.pic ? '<span class="pic pic-sm" aria-hidden="true">' + c.pic + "</span>" : "");
 
   function deckBar(dc) {
     const t = dc.total || 1;
@@ -29,6 +30,45 @@
     return '<span class="chip">новое</span>';
   }
 
+  // ---------------------------------------------------------------- слова в картинках
+  function picPanel() {
+    const pc = srs.picCounts();
+    const fam = pc.learned + pc.learning;
+    const all = srs.picCards();
+    const strip = ["el aguacate", "el departamento", "el pasaporte", "el perro", "el taco", "la playa", "el avión"].map((es) => all.find((c) => c.es === es)).filter(Boolean);
+    return '<section class="panel pic-promo"><div class="pic-strip" aria-hidden="true">' + strip.map((c) => '<span class="pic">' + c.pic + "</span>").join("") + "</div>" +
+      '<div><h2 class="sec">' + pc.total + " слов в картинках</h2>" +
+      '<p class="muted small">Карточки как в Anki: видите картинку — называете слово по-испански вслух, потом проверяете себя. Расписание общее с обычными карточками: слово, выученное по картинке, не придёт второй раз.</p></div>' +
+      deckBar(pc) + '<div class="deck-foot"><span class="muted small num">знакомо ' + fam + " из " + pc.total + (pc.due ? ' · <span class="chip sun">' + pc.due + " к повтору</span>" : "") + '</span><div class="row">' +
+      (pc.due ? '<button class="btn" data-act="cards-pics">Повторить по картинкам</button>' : "") +
+      '<button class="btn ' + (pc.due ? "ghost" : "") + '" data-act="cards-pics-new">Учить 10 новых</button><button class="btn ghost" data-act="open-pics">Все картинки</button></div></div></section>';
+  }
+  // Фильтр галереи: все слова, одна тема или весь топ-1500. Слово может стоять в нескольких темах — учитываем всех «близнецов».
+  function picFilter(f) {
+    if (f === "all") return () => true;
+    return (c) => (srs.BY_ES.get(c.es) || [c]).some((x) => (f === "top" ? srs.isTop(x.deck) : x.deck === f));
+  }
+  function renderPics() {
+    const f = ui.UI.pics;
+    const all = srs.picCards();
+    const themes = D.DECKS.filter((d) => d.group !== "top" && all.some(picFilter(d.id)));
+    const list = all.filter(picFilter(f));
+    const pc = srs.picCounts();
+    const chip = (id, title, n) => '<button data-act="pics-filter" data-arg="' + id + '" aria-pressed="' + (f === id) + '">' + esc(title) + ' <span class="muted num">' + n + "</span></button>";
+    return '<div class="row"><button class="btn quiet sm" data-act="back-words">← Все темы</button></div>' +
+      '<header class="page-head"><div><h1>Слова в картинках</h1><p class="sub">Palabras con imágenes</p></div><div class="row">' +
+      (pc.due ? '<button class="btn" data-act="cards-pics">Повторить ' + pc.due + "</button>" : "") +
+      '<button class="btn ' + (pc.due ? "ghost" : "") + '" data-act="cards-pics-new">Учить 10 новых</button></div></header>' +
+      '<p class="muted small">Нажмите на картинку, чтобы услышать слово. С включённым «Прятать подписи» можно проверять себя: сначала назовите слово, потом нажмите. Иллюстрации — открытый набор Noto Emoji от Google.</p>' +
+      '<div class="seg">' + chip("all", "Все", all.length) + chip("top", "Топ-1500", all.filter(picFilter("top")).length) + themes.map((d) => chip(d.id, d.title, all.filter(picFilter(d.id)).length)).join("") + "</div>" +
+      '<div class="row"><button class="btn ghost sm" data-act="pics-hide" aria-pressed="' + ui.UI.picHide + '">' + (ui.UI.picHide ? "Показать подписи" : "Прятать подписи") + "</button>" +
+      '<span class="legend"><span class="l1">выучено</span><span class="l2">в процессе</span><span>не начато</span></span></div>' +
+      '<div class="pic-grid' + (ui.UI.picHide ? " hide-cap" : "") + '">' + list.map((c) => {
+        const s = srs.status(c.id);
+        return '<button class="pic-tile" data-act="pic-tile" data-es="' + esc(c.es) + '"><i class="dot ' + s + '" title="' + (s === "learned" ? "выучено" : s === "learning" ? "в процессе" : "не начато") + '"></i><span class="pic" aria-hidden="true">' + c.pic + '</span><span class="es">' + esc(c.es) + '</span><span class="ru">' + esc(c.ru) + "</span></button>";
+      }).join("") + "</div>";
+  }
+
   function renderList() {
     const c = srs.counts();
     const decks = srs.deckList();
@@ -41,6 +81,7 @@
       '<div class="search-box"><input type="search" id="wordSearch" placeholder="Поиск по словам и фразам: по-испански или по-русски" value="' + esc(ui.UI.search) + '" autocomplete="off" aria-label="Поиск по словам и фразам">' + keysHTML() + '<div id="searchResults" aria-live="polite"></div></div>' +
       '<p class="muted">Новые слова приходят по ' + srs.newPerDayNow() + " в день поровну из топ-1500 и из тем для переезда — сначала из ваших целей. Карточку, которую вы вспомнили легко, приложение покажет нескоро; трудную — снова скоро.</p>" +
       '<div class="legend"><span class="l1">выучено надолго (интервал от 3 недель)</span><span class="l2">знакомо, в процессе</span><span>не начато</span></div>' +
+      picPanel() +
       '<div class="sec-head"><h2 class="sec">Темы для переезда</h2><span class="muted small">сначала ваши цели</span></div>' +
       '<div class="grid-2">' + themes.map(deckCard).join("") + "</div>" +
       '<div class="sec-head"><h2 class="sec">Топ-1500 самых употребительных слов</h2><span class="muted small num">знакомо ' + topFam + " из " + top.reduce((a, d) => a + d.words.length, 0) + "</span></div>" +
@@ -87,7 +128,7 @@
     box.innerHTML = '<p class="muted small">Найдено: ' + res.length + (res.length === 40 ? "+" : "") + '</p><div class="wordlist">' + res.map((r) => {
       if (r.type === "card") {
         const s = srs.isSkipped(r.c) ? '<span class="chip">скрыто</span>' : statusChip(r.c);
-        return '<div class="wordrow">' + sayBtn(r.c.es) + '<span class="es">' + esc(r.c.es) + '</span><span class="ru">' + esc(r.c.ru) + '<br><span class="small">' + esc((srs.deckById(r.c.deck) || {}).title || "") + "</span></span>" + s + "</div>";
+        return '<div class="wordrow">' + sayBtn(r.c.es) + '<span class="es">' + picSm(r.c) + esc(r.c.es) + '</span><span class="ru">' + esc(r.c.ru) + '<br><span class="small">' + esc((srs.deckById(r.c.deck) || {}).title || "") + "</span></span>" + s + "</div>";
       }
       const inMine = S.custom.some((w) => w[0] === r.es);
       return '<div class="wordrow">' + sayBtn(r.es) + '<span class="es">' + esc(r.es) + '</span><span class="ru">' + esc(r.ru) + '<br><span class="small">' + (r.type === "line" ? "реплика" : "выражение") + " · сцена «" + esc(r.d.title) + "»</span></span>" +
@@ -120,7 +161,7 @@
       const sk = srs.isSkipped(c);
       const actions = sk ? '<button class="btn quiet sm" data-act="word-unskip" data-arg="' + esc(c.id) + '">Вернуть</button>'
         : (!S.cards[c.id] ? '<button class="btn quiet sm" data-act="word-known" data-arg="' + esc(c.id) + '">Знаю</button>' : "") + '<button class="btn quiet sm" data-act="word-skip" data-arg="' + esc(c.id) + '">Скрыть</button>';
-      return '<div class="wordrow' + (sk ? " skipped" : "") + '">' + sayBtn(c.es) + '<span class="es">' + esc(c.es) + '</span><span class="ru">' + esc(c.ru) + (c.note ? '<br><span class="small">' + esc(c.note) + "</span>" : "") + "</span>" +
+      return '<div class="wordrow' + (sk ? " skipped" : "") + '">' + sayBtn(c.es) + '<span class="es">' + picSm(c) + esc(c.es) + '</span><span class="ru">' + esc(c.ru) + (c.note ? '<br><span class="small">' + esc(c.note) + "</span>" : "") + "</span>" +
         '<span class="row-actions">' + (sk ? '<span class="chip">скрыто</span>' : statusChip(c)) + actions + "</span></div>";
     }).join("") + "</div></section>";
     return html;
@@ -157,7 +198,11 @@
 
   Object.assign(App.act, {
     "open-deck": (b) => openDeck(b.dataset.arg),
-    "back-words": () => { ui.UI.deck = null; rerender(); },
+    "back-words": () => { ui.UI.deck = null; ui.UI.pics = null; rerender(); },
+    "open-pics": () => { App.router.open("words"); ui.UI.deck = null; ui.UI.pics = "all"; rerender(); window.scrollTo(0, 0); },
+    "pics-filter": (b) => { ui.UI.pics = b.dataset.arg; rerender(); },
+    "pics-hide": () => { ui.UI.picHide = !ui.UI.picHide; rerender(); },
+    "pic-tile": (b) => { speak(b.dataset.es); if (ui.UI.picHide) b.classList.toggle("open"); },
     "deck-toggle": (b) => { const id = b.dataset.arg; S.settings.decksOff = b.checked ? S.settings.decksOff.filter((x) => x !== id) : S.settings.decksOff.concat([id]); App.state.save(); rerender(); },
     "word-known": (b) => { srs.markKnown(b.dataset.arg); App.state.save(); rerender(); toast("Отмечено как знакомое."); },
     "word-skip": (b) => { const c = srs.BY_ID.get(b.dataset.arg); if (c) { S.skip[c.es] = dayKey(); App.state.save(); rerender(); } },
@@ -203,7 +248,7 @@
   App.views.words = {
     // Список тем рисуется без примеров; странице темы нужны примеры и заметки её слов
     needs: (sub) => (sub === "deck" ? srs.detailChunks([ui.UI.deck]) : []),
-    render: (sub) => (sub === "deck" ? renderDeck() : renderList()),
+    render: (sub) => (sub === "deck" ? renderDeck() : sub === "pics" ? renderPics() : renderList()),
     after: (sub) => { if (sub === "list" && ui.UI.search) renderSearch(); },
     deckBar, addOwn, openDeck
   };

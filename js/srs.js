@@ -13,7 +13,7 @@
   const DETAILS = new Map(); // тема → [[пример, перевод примера, заметка], …] (подгружается лениво)
 
   function addCard(deck, w, det) {
-    const c = { id: deck + "|" + w[0], deck, es: w[0], ru: w[1], exEs: (det && det[0]) || "", exRu: (det && det[1]) || "", note: (det && det[2]) || "" };
+    const c = { id: deck + "|" + w[0], deck, es: w[0], ru: w[1], exEs: (det && det[0]) || "", exRu: (det && det[1]) || "", note: (det && det[2]) || "", pic: D.PICS[w[0]] || "" };
     if (BY_ID.has(c.id)) return;
     ALL.push(c); BY_ID.set(c.id, c);
     if (!BY_ES.has(c.es)) BY_ES.set(c.es, []);
@@ -129,6 +129,30 @@
       return { due, newToday: Math.min(newLeft, freshAvail), freshAvail };
     });
   }
+  // ---------------------------------------------------------------- слова с картинками
+  // Картинка привязана к испанскому слову, поэтому у «близнецов» она общая, а расписание одно на всех
+  const picCards = () => cached("pics", () => uniqueAll().filter((c) => c.pic && !isSkipped(c)));
+  // Новые слова с картинками: сначала в порядке обычной очереди новых слов, затем остальные
+  function freshPics() {
+    return cached("freshPics", () => {
+      const first = freshCandidates().filter((c) => c.pic);
+      const inFirst = new Set(first.map((c) => c.es));
+      return first.concat(picCards().filter((c) => !S.cards[c.id] && !inFirst.has(c.es)));
+    });
+  }
+  function picCounts() {
+    return cached("picCounts", () => {
+      const r = { total: 0, learned: 0, learning: 0, due: 0 };
+      const t = dayKey();
+      for (const c of picCards()) {
+        r.total++;
+        const s = status(c.id);
+        if (s === "learned") r.learned++; else if (s === "learning") r.learning++;
+        if (isDue(c.id, t)) r.due++;
+      }
+      return r;
+    });
+  }
   function deckCounts(deck) {
     return cached("deck:" + deck, () => {
       const r = { total: 0, learned: 0, learning: 0, fresh: 0, due: 0, skipped: 0 };
@@ -195,6 +219,6 @@
   App.srs = {
     ALL, BY_ID, BY_ES, buildCards, applyDetails, ensureDetails, detailChunks, deckList, deckById, enabledDeck, isTop, isSkipped,
     status, isDue, nextInterval, intervalLabel, grade, markKnown, uniqueByEs, uniqueAll, activeDays, knownCount, softStart, newPerDayNow,
-    themeOrder, freshCandidates, counts, deckCounts, typeable, answersFor, checkAnswer, dialogContext, wordPool, cached
+    themeOrder, freshCandidates, counts, deckCounts, picCards, freshPics, picCounts, typeable, answersFor, checkAnswer, dialogContext, wordPool, cached
   };
 })(window.App = window.App || {});

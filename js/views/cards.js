@@ -1,4 +1,5 @@
 // Сессия карточек: «Не знаю / Почти / Знаю», «Уже знаю», «Больше не показывать», пример из сцены.
+// Режим «по картинкам»: на лицевой стороне только картинка, нужно вспомнить испанское слово.
 (function (App) {
   "use strict";
   const { esc, dayKey, shuffle, toast } = App.util;
@@ -14,11 +15,11 @@
   async function start(opts) {
     opts = opts || {};
     const t = dayKey();
-    const inDeck = (c) => !opts.deck || c.deck === opts.deck;
+    const inDeck = (c) => (!opts.deck || c.deck === opts.deck) && (!opts.pics || c.pic);
     let due = shuffle(srs.uniqueByEs(srs.ALL.filter((c) => inDeck(c) && !srs.isSkipped(c) && srs.isDue(c.id, t))));
     if (opts.maxDue != null) due = due.slice(0, opts.maxDue);
     const nNew = opts.extraNew != null ? opts.extraNew : srs.counts().newToday;
-    const fresh = srs.freshCandidates(opts.deck).slice(0, nNew);
+    const fresh = (opts.pics ? srs.freshPics() : srs.freshCandidates(opts.deck)).slice(0, nNew);
     if (opts.onlyNew) due = [];
     const q = [];
     let i = 0, j = 0;
@@ -27,10 +28,10 @@
       if (i < due.length) q.push(due[i++]);
       if (j < fresh.length) q.push(fresh[j++]);
     }
-    if (!q.length) { toast("Сейчас нечего повторять. Новые карточки появятся завтра."); return; }
+    if (!q.length) { toast(opts.pics ? "По картинкам сейчас нечего повторять. Возьмите 10 новых слов с картинками." : "Сейчас нечего повторять. Новые карточки появятся завтра."); return; }
     App.audio.preload(q.map((c) => c.es));
     try { await srs.ensureDetails(q.map((c) => c.deck)); } catch (e) { /* карточки без примеров тоже работают */ }
-    Object.assign(Cards, { active: true, queue: q.map((c) => ({ id: c.id, isNew: !S.cards[c.id] })), pos: 0, shown: false, done: 0, again: 0, deck: opts.deck || null });
+    Object.assign(Cards, { active: true, queue: q.map((c) => ({ id: c.id, isNew: !S.cards[c.id] })), pos: 0, shown: false, done: 0, again: 0, deck: opts.deck || null, pics: !!opts.pics });
     pickFront();
     App.router.render(); window.scrollTo(0, 0);
     autoSay();
@@ -39,6 +40,8 @@
     const it = Cards.queue[Cards.pos];
     if (!it) return;
     const d = S.settings.dir;
+    Cards.hint = false;
+    if (Cards.pics) { Cards.front = "pic"; return; }
     Cards.front = it.isNew ? "es" : d === "mixed" ? (Math.random() < 0.5 ? "es" : "ru") : d;
   }
   function autoSay() {
@@ -53,14 +56,21 @@
     const deck = srs.deckById(c.deck);
     const st = S.cards[c.id];
     const total = Cards.queue.length;
-    const front = Cards.front === "es"
-      ? '<p class="flash-prompt es">' + esc(c.es) + "</p>"
-      : '<p class="flash-prompt ru">' + esc(c.ru) + "</p>";
+    const isPic = Cards.front === "pic";
+    // В обычном режиме картинка на лицевой стороне только там, где она не подсказывает ответ: при переводе с русского и у нового слова
+    const picFront = c.pic && !isPic && (Cards.front === "ru" || it.isNew);
+    const picHTML = (cls) => '<div class="pic ' + cls + '" role="img" aria-label="Картинка к слову">' + c.pic + "</div>";
+    const front = isPic
+      ? picHTML("pic-xl") + (Cards.hint || Cards.shown ? "" : '<button class="btn quiet sm" data-act="card-hint">Подсказка: перевод</button>') + (Cards.hint && !Cards.shown ? '<p class="muted">' + esc(c.ru) + "</p>" : "")
+      : (picFront ? picHTML("pic-lg") : "") + (Cards.front === "es"
+        ? '<p class="flash-prompt es">' + esc(c.es) + "</p>"
+        : '<p class="flash-prompt ru">' + esc(c.ru) + "</p>");
     let back = "";
     if (Cards.shown) {
       const ctx = srs.dialogContext(c);
       back = '<div class="flash-answer">' +
-        (Cards.front === "es" ? '<p class="main-ans ru">' + esc(c.ru) + "</p>" : '<div class="row" style="justify-content:center"><p class="main-ans es">' + esc(c.es) + "</p>" + sayBtn(c.es) + "</div>") +
+        (c.pic && !isPic && !picFront ? picHTML("pic-lg") : "") +
+        (isPic ? '<div class="row" style="justify-content:center"><p class="main-ans es">' + esc(c.es) + "</p>" + sayBtn(c.es) + '</div><p class="main-ans ru">' + esc(c.ru) + "</p>" : Cards.front === "es" ? '<p class="main-ans ru">' + esc(c.ru) + "</p>" : '<div class="row" style="justify-content:center"><p class="main-ans es">' + esc(c.es) + "</p>" + sayBtn(c.es) + "</div>") +
         (c.exEs ? '<div class="example"><div class="row" style="justify-content:center"><p class="es">' + esc(c.exEs) + "</p>" + sayBtn(c.exEs) + '</div><p class="muted small">' + esc(c.exRu) + "</p></div>" : "") +
         (ctx ? '<div class="context"><p class="eyebrow">В сцене «' + esc(ctx.dialog.title) + '»</p><div class="row" style="justify-content:center"><p class="es">' + esc(ctx.es) + "</p>" + sayBtn(ctx.es) + '</div><p class="muted small">' + esc(ctx.ru) + "</p></div>" : "") +
         (c.note ? '<p class="note">' + esc(c.note) + "</p>" : "") + "</div>" +
@@ -74,14 +84,14 @@
       (Cards.front === "es" ? '<div class="row" style="justify-content:center">' + front + sayBtn(c.es) + "</div>" : front) +
       (Cards.shown ? back : '<button class="btn" data-act="flip" data-autofocus>Показать ответ <kbd>Пробел</kbd></button>' + (it.isNew ? '<button class="btn quiet sm" data-act="card-known">Я это уже знаю</button>' : "")) +
       "</section>" +
-      '<p class="muted small" style="text-align:center">' + (Cards.front === "es" ? "Вспомните перевод, затем откройте ответ." : "Скажите это по-испански вслух, затем откройте ответ.") + " Клавиши 1–3 — оценка.</p>";
+      '<p class="muted small" style="text-align:center">' + (isPic ? "Назовите по-испански вслух, что на картинке, затем откройте ответ." : Cards.front === "es" ? "Вспомните перевод, затем откройте ответ." : "Скажите это по-испански вслух, затем откройте ответ.") + " Клавиши 1–3 — оценка.</p>";
   }
   function renderDone() {
     const c = srs.counts();
     return '<section class="panel stack" style="text-align:center;justify-items:center;padding:40px 24px"><p class="eyebrow">¡Listo!</p><h1 class="hero-date">Готово</h1>' +
       "<p>Пройдено карточек: <b>" + Cards.done + "</b>" + (Cards.again ? ", из них забытых: " + Cards.again : "") + ".</p>" +
       '<div class="row" style="justify-content:center">' + (c.due ? '<button class="btn" data-act="cards-start">Повторить оставшиеся (' + c.due + ")</button>" : "") +
-      '<button class="btn ghost" data-act="go" data-arg="today">К плану на сегодня</button><button class="btn ghost" data-act="cards-more">Ещё 10 новых слов</button></div></section>';
+      '<button class="btn ghost" data-act="go" data-arg="today">К плану на сегодня</button>' + (Cards.pics ? '<button class="btn ghost" data-act="cards-pics-new">Ещё 10 слов по картинкам</button>' : '<button class="btn ghost" data-act="cards-more">Ещё 10 новых слов</button>') + "</div></section>";
   }
 
   function countSeen(it) {
@@ -134,7 +144,7 @@
   function flip() {
     Cards.shown = true;
     App.router.render();
-    if (S.settings.autoplay && Cards.front === "ru") speak(srs.BY_ID.get(Cards.queue[Cards.pos].id).es);
+    if (S.settings.autoplay && Cards.front !== "es") speak(srs.BY_ID.get(Cards.queue[Cards.pos].id).es);
   }
 
   Object.assign(App.act, {
@@ -143,6 +153,9 @@
     "cards-more": () => start({ extraNew: 10, onlyNew: true }),
     "cards-deck": (b) => start({ deck: b.dataset.arg, extraNew: 0 }),
     "cards-deck-new": (b) => start({ deck: b.dataset.arg, extraNew: 10, onlyNew: true }),
+    "cards-pics": () => start({ pics: true }),
+    "cards-pics-new": () => start({ pics: true, extraNew: 10, onlyNew: true }),
+    "card-hint": () => { Cards.hint = true; App.router.render(); },
     "cards-exit": () => { Cards.active = false; App.state.save(); App.router.render(); },
     flip,
     grade: (b) => doGrade(Number(b.dataset.arg)),

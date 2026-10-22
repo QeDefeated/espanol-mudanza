@@ -1,5 +1,5 @@
 // Ленивая загрузка учебных данных.
-// На старте нужен только data/index.json: слова (без примеров), названия уроков и сцен, цели.
+// На старте нужен только data/index.json: слова (без примеров), картинки к словам, названия уроков и сцен, цели.
 // Остальное подгружается по требованию раздела, а в свободное время — фоном:
 //   words:<тема>  — примеры и заметки к словам темы (data/words/<тема>.json)
 //   dialogs       — реплики и выражения всех сцен (data/dialogs.json)
@@ -9,7 +9,7 @@
 (function (App) {
   "use strict";
 
-  const D = App.D = { DECKS: [], LESSONS: [], DIALOGS: [], GOALS: [], LINKS: {}, ERRORS: [], CONJ: null, AUDIO: null, version: "" };
+  const D = App.D = { DECKS: [], LESSONS: [], DIALOGS: [], GOALS: [], LINKS: {}, ERRORS: [], PICS: {}, CONJ: null, AUDIO: null, version: "" };
   const loaded = new Set();
   const pending = new Map();
 
@@ -67,6 +67,7 @@
     D.DIALOGS = j.dialogs.map((d) => Object.assign({ lines: null, vocab: null }, d));
     D.GOALS = j.goals;
     D.LINKS = j.links;
+    D.PICS = j.pics || {};
   }
 
   // Фоновая подгрузка всего остального по одному блоку, когда браузер свободен.

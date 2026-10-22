@@ -45,6 +45,22 @@
     for (const x of same.concat(others)) { if (opts.length >= 4) break; if (!opts.includes(x[field])) opts.push(x[field]); }
     return { t: "choice", card: c, q: toRu ? c.es : c.ru, qEs: toRu, opts: shuffle(opts), a: c[field], say: c.es, mk: { k: "card", id: c.id } };
   }
+  // «Угадай по картинке»: в вариантах только слова с другой картинкой, чтобы ответ был однозначным
+  function picChoiceItem(c) {
+    const all = srs.picCards();
+    const fits = (x) => x.es !== c.es && x.pic !== c.pic;
+    const same = shuffle(all.filter((x) => x.deck === c.deck && fits(x)));
+    const others = shuffle(all.filter((x) => x.deck !== c.deck && fits(x)));
+    const opts = [c.es];
+    for (const x of same.concat(others)) { if (opts.length >= 4) break; if (!opts.includes(x.es)) opts.push(x.es); }
+    return { t: "choice", pic: c.pic, card: c, q: c.ru, qEs: false, opts: shuffle(opts), a: c.es, say: c.es, mk: { k: "card", id: c.id } };
+  }
+  function picItems(n) {
+    const seen = shuffle(srs.picCards().filter((c) => S.cards[c.id]));
+    const pool = seen.length >= n ? seen : seen.concat(srs.freshPics().slice(0, 30));
+    // Знакомые слова иногда нужно написать самому — картинка плюс перевод мелко, потому что одна картинка бывает у нескольких слов
+    return pool.slice(0, n).map((c) => (S.cards[c.id] && srs.typeable(c) && Math.random() < 0.4 ? Object.assign(typeItem(c), { pic: c.pic }) : picChoiceItem(c)));
+  }
   const typeItem = (c) => ({ t: "type", card: c, q: c.ru, answers: srs.answersFor(c), say: c.es, show: c.es, mk: { k: "card", id: c.id } });
   const tokenize = (s) => s.split(/\s+/).map((t) => t.replace(/^[¿¡"«(]+|[?!.,;:"»)]+$/g, "")).filter(Boolean);
   function buildItem(s, pool) {
@@ -106,6 +122,7 @@
   function genItems(kind, arg) {
     const N = 10;
     if (kind === "choice") return srs.wordPool().slice(0, N).map(choiceItem);
+    if (kind === "pics") return picItems(N);
     if (kind === "type") return srs.wordPool().filter(srs.typeable).slice(0, N).map(typeItem);
     if (kind === "build") { const sp = sentencePool(); return sp.slice(0, N).map((s) => buildItem(s, sp)); }
     if (kind === "dict") return sentencePool().filter((s) => s.es.split(" ").length <= 8 && App.audio.hasRecording(s.es)).slice(0, N).map(dictItem);
@@ -159,12 +176,16 @@
     if (!it) return renderDone();
     const kind = kindById(P.kind);
     const d = P.dialog && App.goals.dialogById(P.dialog);
-    let body = '<p class="q-kind">' + esc(P.kind === "errors" ? "Как правильно сказать?" : KIND_LABEL[it.t]) + "</p>";
-    if (it.t === "choice") {
+    let body = '<p class="q-kind">' + esc(P.kind === "errors" ? "Как правильно сказать?" : it.pic ? (it.t === "type" ? "Напишите по-испански, что на картинке" : "Что на картинке?") : KIND_LABEL[it.t]) + "</p>";
+    const picHTML = it.pic ? '<div class="pic q-pic" role="img" aria-label="Картинка к слову">' + it.pic + "</div>" : "";
+    if (it.t === "choice" && it.pic) {
+      body += picHTML + '<div class="options">' + it.opts.map((o, i) => '<button class="opt es" data-act="choose" data-arg="' + i + '"><kbd>' + (i + 1) + "</kbd><span>" + esc(o) + "</span></button>").join("") + "</div>";
+    } else if (it.t === "choice") {
       body += '<div class="row">' + '<p class="q-text ' + (it.qEs ? "es" : "ru") + '">' + esc(it.q) + "</p>" + (it.qEs ? sayBtn(it.say) : "") + "</div>" +
         '<div class="options">' + it.opts.map((o, i) => '<button class="opt ' + (it.qEs ? "" : "es") + '" data-act="choose" data-arg="' + i + '"><kbd>' + (i + 1) + "</kbd><span>" + esc(o) + "</span></button>").join("") + "</div>";
     } else if (it.t === "type" || it.t === "dict" || it.t === "conj") {
-      if (it.t === "type") body += '<p class="q-text ru">' + esc(it.q) + "</p>" + (it.card.note ? '<p class="muted small">' + esc(it.card.note) + "</p>" : "");
+      if (it.t === "type" && it.pic) body += picHTML + '<p class="muted" style="text-align:center">' + esc(it.q) + "</p>";
+      else if (it.t === "type") body += '<p class="q-text ru">' + esc(it.q) + "</p>" + (it.card.note ? '<p class="muted small">' + esc(it.card.note) + "</p>" : "");
       if (it.t === "dict") body += '<div class="row">' + sayBtn(it.say, "lg") + '<button class="btn ghost sm" data-act="say-slow" data-text="' + esc(it.say) + '">' + ICON.slow.replace("<svg", '<svg width="16" height="16"') + " Медленно</button></div>";
       if (it.t === "conj") {
         const tn = D.CONJ.TENSES.find((t) => t.id === it.tense);
@@ -198,6 +219,7 @@
     let html = '<div class="feedback ' + (ok ? "ok" : "bad") + '"><p class="head">' + (ok ? pick(["¡Correcto!", "¡Muy bien!", "¡Exacto!", "¡Perfecto!"]) : "Не совсем") + "</p>";
     if (extra) html += "<p>" + extra + "</p>";
     if (!ok || it.t !== "choice") html += '<div class="row"><p class="ans' + (esRight ? "" : " ru") + '">' + esc(right) + "</p>" + (esRight ? sayBtn(right) : sayBtn(it.say)) + "</div>";
+    if (it.pic && it.t === "choice") html += '<p class="muted small">' + esc(it.card.ru) + "</p>";
     if (it.why) html += '<p class="small">' + esc(it.why) + "</p>";
     if (it.t === "dict" || it.t === "build") html += '<p class="muted small">' + esc(it.ru || it.q) + "</p>";
     if (it.card && it.card.exEs && it.t !== "build") html += '<p class="small"><span class="es">' + esc(it.card.exEs) + '</span> — <span class="muted">' + esc(it.card.exRu) + "</span></p>";
