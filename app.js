@@ -253,13 +253,63 @@
     Voice.keep.push(u); if (Voice.keep.length > 30) Voice.keep.shift();
     return u;
   }
-  function speak(text, slow) {
-    if (!Voice.ok) { toast("Озвучка недоступна в этом браузере."); return; }
+  // Записанная озвучка: фразы из словаря, диалогов и уроков заранее записаны
+  // нейросетевыми голосами и лежат в audio/*.json (base64 mp3), индекс — в audio-index.js.
+  // Голос браузера нужен только для того, чего нет в записи (формы глаголов, ответы Claude, свои слова).
+  const REC = { index: window.ES_AUDIO_INDEX || {}, packs: {}, loading: {}, audio: null, seq: 0 };
+  const AK = window.ES_AUDIO_KEY;
+  function loadPack(name) {
+    if (REC.packs[name]) return Promise.resolve(REC.packs[name]);
+    if (!REC.loading[name]) {
+      REC.loading[name] = fetch("audio/" + name + ".json")
+        .then((r) => (r.ok ? r.json() : {}))
+        .then((j) => (REC.packs[name] = j))
+        .catch(() => { delete REC.loading[name]; return {}; });
+    }
+    return REC.loading[name];
+  }
+  const packFor = (text) => (AK ? REC.index[AK.audioKey(text)] : null);
+  const hasRecording = (text) => !!packFor(text);
+  function preload(texts) { const seen = new Set(); texts.forEach((t) => { const p = t && packFor(t); if (p && !seen.has(p)) { seen.add(p); loadPack(p); } }); }
+  function stopAudio() {
+    REC.seq++;
+    if (REC.audio) { try { REC.audio.pause(); } catch (e) { /* уже остановлено */ } REC.audio = null; }
+    if (Voice.ok) try { speechSynthesis.cancel(); } catch (e) { /* нечего останавливать */ }
+  }
+  // Проигрывает фразу; onend вызывается после окончания (или сразу, если звука нет)
+  async function speak(text, slow, onend) {
+    stopAudio();
+    const seq = REC.seq;
+    const done = () => { if (seq === REC.seq && onend) onend(); };
+    const pack = packFor(text);
+    if (pack) {
+      const p = await loadPack(pack);
+      if (seq !== REC.seq) return;
+      const b64 = p[AK.audioKey(text)];
+      if (b64) {
+        const a = new Audio("data:audio/mpeg;base64," + b64);
+        a.playbackRate = slow ? 0.7 : Math.max(0.6, Math.min(1.3, S.settings.rate / 0.9));
+        a.onended = done;
+        a.onerror = done;
+        REC.audio = a;
+        a.play().catch(() => { if (seq === REC.seq) { toast("Браузер не дал включить звук. Нажмите кнопку озвучки ещё раз."); } });
+        return;
+      }
+    }
+    speakBrowser(text, slow, done);
+  }
+  function speakBrowser(text, slow, done) {
+    const v = Voice.ok ? chooseVoice() : null;
+    if (!v) {
+      if (!Voice.warned) { Voice.warned = true; toast("Для этой фразы нет записи, а испанского голоса в браузере нет. Как его добавить — в «Прогрессе» → «Озвучка»."); }
+      if (done) setTimeout(done, 300);
+      return;
+    }
     try {
-      speechSynthesis.cancel();
-      speechSynthesis.speak(utter(text, slow));
-      if (!chooseVoice() && !Voice.warned) { Voice.warned = true; toast("Испанский голос не найден. Как его добавить — в разделе «Прогресс» → «Озвучка»."); }
-    } catch (e) { toast("Не удалось воспроизвести звук."); }
+      const u = utter(text, slow);
+      u.onend = done; u.onerror = done;
+      speechSynthesis.speak(u);
+    } catch (e) { if (done) done(); }
   }
   const sayBtn = (text, cls) => '<button class="say ' + (cls || "") + '" data-act="say" data-text="' + esc(text) + '" aria-label="Произнести" title="Произнести">' + ICON.say + "</button>";
 
@@ -281,6 +331,9 @@
   }
   const deckById = (id) => deckList().find((d) => d.id === id);
   const enabledDeck = (id) => !S.settings.decksOff.includes(id);
+  const TOP_IDS = new Set(DECKS.filter((d) => d.group === "top").map((d) => d.id));
+  const isTop = (id) => TOP_IDS.has(id);
+  function interleave(a, b) { const out = []; for (let i = 0; i < Math.max(a.length, b.length); i++) { if (i < a.length) out.push(a[i]); if (i < b.length) out.push(b[i]); } return out; }
   const status = (id) => { const c = S.cards[id]; return !c ? "new" : c.i >= 21 ? "learned" : "learning"; };
   const isDue = (id, t) => { const c = S.cards[id]; return c && c.d <= t; };
 
@@ -368,7 +421,7 @@
     }
     Cards.active = false; P.active = false;
     try { if (location.hash !== "#" + r) history.replaceState(null, "", "#" + r); } catch (e) { /* адрес не меняется */ }
-    if (Voice.ok) try { speechSynthesis.cancel(); } catch (e) { /* нечего останавливать */ }
+    stopAudio(); Dlg.playing = -1;
     render();
     window.scrollTo(0, 0);
   }
@@ -453,7 +506,7 @@
     { id: "choice", title: "Выбор перевода", ex: "el departamento → квартира", desc: "Быстро узнавать слова в обе стороны.", min: 4 },
     { id: "type", title: "Перевод на испанский", ex: "ключ → la llave", desc: "Вспомнить слово и написать его самому.", min: 5 },
     { id: "build", title: "Собери фразу", ex: "¿ · Dónde · está · el · banco · ?", desc: "Порядок слов в живых фразах.", min: 5 },
-    { id: "dict", title: "Диктант", ex: "Слушаю и записываю", desc: "Понимание на слух: латиноамериканское произношение.", min: 6, voice: true },
+    { id: "dict", title: "Диктант", ex: "Слушаю и записываю", desc: "Понимание на слух: латиноамериканское произношение.", min: 6 },
     { id: "conj", title: "Спряжения", ex: "tener · nosotros → tenemos", desc: "Тренажёр форм глаголов по выбранным временам.", min: 5 },
     { id: "mist", title: "Работа над ошибками", ex: "Повторить то, где ошибся", desc: "Слова и формы, в которых вы ошибались.", min: 4 }
   ];
@@ -470,7 +523,7 @@
     if (lesson) items.push({ done: d.lesson > 0, title: "Урок: " + lesson.title, sub: lesson.es + " · " + lesson.level, min: 8, act: "open-lesson", arg: lesson.id, label: "Открыть" });
     const nPrac = G < 30 ? 1 : G < 45 ? 2 : 3;
     const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-    const kinds = PRACTICE_KINDS.filter((k) => k.id !== "mist" && (!k.voice || Voice.ok));
+    const kinds = PRACTICE_KINDS.filter((k) => k.id !== "mist");
     for (let i = 0; i < nPrac; i++) {
       const k = kinds[(doy + i * 2) % kinds.length];
       items.push({ done: ((d.pk || {})[k.id] || 0) > 0, title: "Упражнение: " + k.title.toLowerCase(), sub: k.desc, min: k.min, act: "practice-start", arg: k.id, label: "Начать" });
@@ -537,21 +590,28 @@
     const t = dc.total || 1;
     return '<div class="bar" aria-hidden="true"><i class="b-learned" style="width:' + (dc.learned / t * 100) + '%"></i><i class="b-learning" style="width:' + (dc.learning / t * 100) + '%"></i></div>';
   }
+  function deckCard(d) {
+    const dc = deckCounts(d.id);
+    return '<section class="panel deck"><div class="deck-top"><div><div class="deck-title">' + esc(d.title) + '</div><div class="deck-es">' + esc(d.es) + "</div></div>" +
+      (dc.due ? '<span class="chip sun">' + dc.due + " к повтору</span>" : "") + "</div>" + deckBar(dc) +
+      '<div class="deck-foot"><span class="muted small num">' + dc.learned + " / " + dc.total + ' выучено</span><div class="row">' +
+      '<label class="switch"><input type="checkbox" data-act="deck-toggle" data-arg="' + d.id + '"' + (enabledDeck(d.id) ? " checked" : "") + "> В плане</label>" +
+      '<button class="btn ghost sm" data-act="open-deck" data-arg="' + d.id + '">Открыть</button></div></div></section>';
+  }
   function viewWords() {
     const c = counts();
     const decks = deckList();
+    const top = decks.filter((d) => d.group === "top"), themes = decks.filter((d) => d.group !== "top");
+    const topLearned = top.reduce((a, d) => a + deckCounts(d.id).learned, 0);
     return '<header class="page-head"><div><h1>Слова</h1><p class="sub">Vocabulario para la mudanza</p></div>' +
       '<div class="row"><button class="btn" data-act="cards-start"' + (c.due + c.newToday ? "" : " disabled") + ">Учить: " + c.due + " повторить · " + c.newToday + " новых</button></div></header>" +
-      '<p class="muted">Новые слова приходят из тем, у которых включён переключатель «В плане», по ' + S.settings.newPerDay + " в день. Карточку, которую вы вспомнили легко, приложение покажет нескоро; трудную — снова скоро.</p>" +
+      '<p class="muted">Новые слова приходят по ' + S.settings.newPerDay + " в день поровну из топ-500 и из тем для переезда — из тех, у которых включён переключатель «В плане». Карточку, которую вы вспомнили легко, приложение покажет нескоро; трудную — снова скоро.</p>" +
       '<div class="legend"><span class="l1">выучено (интервал от 3 недель)</span><span class="l2">в процессе</span><span>не начато</span></div>' +
-      '<div class="grid-2">' + decks.map((d) => {
-        const dc = deckCounts(d.id);
-        return '<section class="panel deck"><div class="deck-top"><div><div class="deck-title">' + esc(d.title) + '</div><div class="deck-es">' + esc(d.es) + "</div></div>" +
-          (dc.due ? '<span class="chip sun">' + dc.due + " к повтору</span>" : "") + "</div>" + deckBar(dc) +
-          '<div class="deck-foot"><span class="muted small num">' + dc.learned + " / " + dc.total + ' выучено</span><div class="row">' +
-          '<label class="switch"><input type="checkbox" data-act="deck-toggle" data-arg="' + d.id + '"' + (enabledDeck(d.id) ? " checked" : "") + "> В плане</label>" +
-          '<button class="btn ghost sm" data-act="open-deck" data-arg="' + d.id + '">Открыть</button></div></div></section>';
-      }).join("") + "</div>" +
+      '<div class="sec-head"><h2 class="sec">Топ-500 самых употребительных слов</h2><span class="muted small num">' + topLearned + " / 500 выучено</span></div>" +
+      '<p class="muted small">Эти 500 слов покрывают большую часть повседневной речи. Отдел 1 — самые частые слова, дальше — глаголы, существительные, прилагательные и наречия, связки и числа.</p>' +
+      '<div class="grid-2">' + top.map(deckCard).join("") + "</div>" +
+      '<h2 class="sec">Темы для переезда</h2>' +
+      '<div class="grid-2">' + themes.map(deckCard).join("") + "</div>" +
       '<section class="panel stack"><h2 class="sec">Новые слова по вашей теме</h2><p class="muted">Напишите тему — Claude подберёт 10 слов с примерами, принятыми в стране «' + esc(country().ru) + '». Выбранные слова попадут в «Мои слова».</p><div data-ai-slot="gen"></div></section>';
   }
   const AI_SLOTS = {
@@ -608,7 +668,9 @@
     const inDeck = (c) => !opts.deck || c.deck === opts.deck;
     const due = shuffle(ALL.filter((c) => inDeck(c) && isDue(c.id, t)));
     let nNew = opts.extraNew != null ? opts.extraNew : counts().newToday;
-    const fresh = ALL.filter((c) => inDeck(c) && !S.cards[c.id] && (opts.deck || enabledDeck(c.deck))).slice(0, nNew);
+    const freshAll = ALL.filter((c) => inDeck(c) && !S.cards[c.id] && (opts.deck || enabledDeck(c.deck)));
+    // Без выбранной темы новые слова чередуются: одно из топ-500, одно из тем для переезда
+    const fresh = opts.deck ? freshAll.slice(0, nNew) : interleave(freshAll.filter((c) => isTop(c.deck)), freshAll.filter((c) => !isTop(c.deck))).slice(0, nNew);
     if (opts.onlyNew) due.length = 0;
     const q = [];
     let i = 0, j = 0;
@@ -618,6 +680,7 @@
       if (j < fresh.length) q.push(fresh[j++]);
     }
     if (!q.length) { toast("Сейчас нечего повторять. Новые карточки появятся завтра."); return; }
+    preload(q.map((c) => c.es));
     Object.assign(Cards, { active: true, queue: q.map((c) => ({ id: c.id, isNew: !S.cards[c.id] })), pos: 0, shown: false, done: 0, again: 0, deck: opts.deck || null });
     pickFront();
     render(); window.scrollTo(0, 0);
@@ -778,8 +841,8 @@
     return '<header class="page-head"><div><h1>Практика</h1><p class="sub">Ejercicios</p></div></header>' +
       '<p class="muted">В каждом упражнении 10 заданий. Слова берутся из тех, что вы уже начали учить в карточках; если их пока мало — из первых тем. Ответ можно набирать без ударений: приложение засчитает, но подскажет правильное написание.</p>' +
       '<div class="tiles">' + PRACTICE_KINDS.map((k) => {
-        const disabled = (k.voice && !Voice.ok) || (k.id === "mist" && !S.mistakes.length);
-        return '<button class="tile" data-act="practice-start" data-arg="' + k.id + '"' + (disabled ? " disabled" : "") + '><span class="tile-title">' + esc(k.title) + (k.id === "mist" ? " · " + S.mistakes.length : "") + '</span><span class="tile-ex">' + esc(k.ex) + '</span><span class="muted small">' + esc(disabled && k.voice ? "Нужна озвучка в браузере." : k.desc) + "</span></button>";
+        const disabled = k.id === "mist" && !S.mistakes.length;
+        return '<button class="tile" data-act="practice-start" data-arg="' + k.id + '"' + (disabled ? " disabled" : "") + '><span class="tile-title">' + esc(k.title) + (k.id === "mist" ? " · " + S.mistakes.length : "") + '</span><span class="tile-ex">' + esc(k.ex) + '</span><span class="muted small">' + esc(k.desc) + "</span></button>";
       }).join("") + "</div>" +
       '<section class="panel stack"><h2 class="sec">Настройки спряжений</h2><p class="muted small">Какие времена тренировать:</p><div class="seg">' +
       CONJ.TENSES.map((t) => '<button data-act="conj-tense" data-arg="' + t.id + '" aria-pressed="' + set.conjTenses.includes(t.id) + '" title="' + esc(t.ru + ": " + t.hint) + '">' + esc(t.es) + "</button>").join("") + "</div>" +
@@ -849,15 +912,15 @@
     if (kind === "choice") return wordPool().slice(0, N).map(choiceItem);
     if (kind === "type") return wordPool().filter(typeable).slice(0, N).map(typeItem);
     if (kind === "build") { const sp = sentencePool(); return sp.slice(0, N).map((s) => buildItem(s, sp)); }
-    if (kind === "dict") return sentencePool().filter((s) => s.es.split(" ").length <= 8).slice(0, N).map(dictItem);
+    if (kind === "dict") return sentencePool().filter((s) => s.es.split(" ").length <= 8 && hasRecording(s.es)).slice(0, N).map(dictItem);
     if (kind === "conj") return Array.from({ length: N }, () => conjItem());
     if (kind === "mist") return S.mistakes.slice(0, N).map((m) => { const it = itemFromMistake(m); if (it) it.fromMistake = mistakeKey(m); return it; }).filter(Boolean);
     return [];
   }
   function startPractice(kind) {
-    if (kind === "dict" && !Voice.ok) { toast("Для диктанта нужна озвучка в браузере."); return; }
     const items = genItems(kind);
     if (!items.length) { toast(kind === "mist" ? "Список ошибок пуст — отлично!" : "Пока мало материала. Начните с карточек."); return; }
+    preload(items.map((it) => it.say));
     Object.assign(P, { active: true, kind, items, i: 0, ok: 0, answered: false, wrong: [], result: null });
     resetBuild();
     render(); window.scrollTo(0, 0);
@@ -989,26 +1052,18 @@
       '<div class="row"><button class="btn" data-act="dialog-done" data-arg="' + d.id + '">' + (S.dialogs[d.id] ? "Пройден ✓ · отметить ещё раз" : "Отметить как пройденный") + '</button><button class="btn ghost" data-act="open-chat" data-arg="' + d.id + '">Разыграть сцену с Claude</button></div>';
   }
   function playAll(d) {
-    if (!Voice.ok) { toast("Озвучка недоступна в этом браузере."); return; }
     if (Dlg.playing >= 0) { stopPlay(); return; }
-    speechSynthesis.cancel();
     let i = 0;
     const mark = (k) => { Dlg.playing = k; $$(".line").forEach((el) => el.classList.toggle("playing", Number(el.dataset.line) === k)); const b = $("[data-act=play-all]"); if (b) b.textContent = k >= 0 ? "Остановить" : "Прослушать весь диалог"; };
     const next = () => {
-      if (Dlg.playing < 0 && i > 0) return;
-      if (i >= d.lines.length || route !== "talk" || UI.talk.mode !== "dialog") { mark(-1); return; }
+      if (i >= d.lines.length || route !== "talk" || UI.talk.mode !== "dialog" || UI.talk.id !== d.id) { mark(-1); return; }
       mark(i);
       const el = $('.line[data-line="' + i + '"]'); if (el) el.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      const u = utter(d.lines[i][1]);
-      u.pitch = d.lines[i][0] === "me" ? 1.12 : 0.92;
-      u.onend = () => { i++; setTimeout(next, 380); };
-      u.onerror = () => mark(-1);
-      speechSynthesis.speak(u);
+      speak(d.lines[i][1], false, () => { i++; setTimeout(() => { if (Dlg.playing >= 0) next(); }, 350); });
     };
-    Dlg.playing = 0;
     next();
   }
-  function stopPlay() { Dlg.playing = -1; try { speechSynthesis.cancel(); } catch (e) { /* ок */ } $$(".line").forEach((el) => el.classList.remove("playing")); const b = $("[data-act=play-all]"); if (b) b.textContent = "Прослушать весь диалог"; }
+  function stopPlay() { Dlg.playing = -1; stopAudio(); $$(".line").forEach((el) => el.classList.remove("playing")); const b = $("[data-act=play-all]"); if (b) b.textContent = "Прослушать весь диалог"; }
 
   function scenarios() {
     return [{ id: "free", title: "Свободный разговор", role: "дружелюбный местный житель, с которым ученик только что познакомился", desc: "знакомство и разговор о жизни, переезде, работе и городе" }]
@@ -1137,10 +1192,12 @@
       '<label class="check"><input type="checkbox" data-set="autoplay"' + (set.autoplay ? " checked" : "") + "> Автоматически озвучивать испанское слово на карточке</label>" +
       '<label class="check"><input type="checkbox" data-set="soft"' + (set.soft ? " checked" : "") + "> Мягкая проверка: засчитывать ответ без ударений и показывать правильное написание</label></section>" +
       '<section class="panel stack"><h2 class="sec">Озвучка</h2>' +
-      (Voice.ok ? '<label class="field">Голос<select id="voiceSel" data-set="voice"><option value="">Автовыбор (сейчас: ' + esc(cur ? cur.name + ", " + cur.lang : "испанский голос не найден") + ")</option>" + voices.map((v) => '<option value="' + esc(v.voiceURI) + '"' + (set.voice === v.voiceURI ? " selected" : "") + ">" + esc(v.name + " — " + v.lang) + "</option>").join("") + "</select></label>" +
-        '<label class="field">Скорость: <span id="rateVal" class="num">' + set.rate.toFixed(2) + '</span><input type="range" min="0.6" max="1.2" step="0.05" data-set="rate" value="' + set.rate + '"></label>' +
-        '<div class="row"><button class="btn ghost sm" data-act="say" data-text="Hola, ¿cómo estás? Bienvenido a tu nueva ciudad.">Проверить голос</button></div>' : "<p>Этот браузер не поддерживает синтез речи. Используйте Microsoft Edge или Google Chrome.</p>") +
-      '<p class="muted small">Лучше всего звучат голоса в Microsoft Edge: там есть «естественные» онлайн-голоса для Мексики, Колумбии, Аргентины и других стран. Если испанских голосов в списке нет, в Windows откройте «Параметры → Время и язык → Речь → Добавить голоса» и установите «Español (México)», затем перезапустите браузер.</p></section>' +
+      '<p>Слова, примеры, диалоги и примеры из уроков записаны нейросетевыми голосами с мексиканским произношением: Далия читает слова и примеры, в диалогах звучат Хорхе и Алонсо. Запись работает в любом браузере, ничего устанавливать не нужно.</p>' +
+      '<label class="field">Скорость: <span id="rateVal" class="num">' + Number(set.rate).toFixed(2) + '</span><input type="range" min="0.6" max="1.2" step="0.05" data-set="rate" value="' + set.rate + '"></label>' +
+      '<div class="row"><button class="btn ghost sm" data-act="say" data-text="Hola, ¿cómo estás? Bienvenido a tu nueva ciudad.">Прослушать пример</button></div>' +
+      '<h3 class="caption" style="margin-top:8px">Голос браузера</h3><p class="muted small">Нужен только для того, что нельзя записать заранее: формы глаголов в тренажёре, ответы Claude и ваши собственные слова.</p>' +
+      (Voice.ok ? '<label class="field">Голос<select id="voiceSel" data-set="voice"><option value="">Автовыбор (сейчас: ' + esc(cur ? cur.name + ", " + cur.lang : "испанский голос не найден") + ")</option>" + voices.map((v) => '<option value="' + esc(v.voiceURI) + '"' + (set.voice === v.voiceURI ? " selected" : "") + ">" + esc(v.name + " — " + v.lang) + "</option>").join("") + "</select></label>" : "<p>Этот браузер не умеет синтезировать речь.</p>") +
+      (cur ? "" : '<p class="muted small">Испанского голоса в браузере нет, поэтому формы глаголов и ответы Claude звучать не будут. Чтобы добавить голос: в Windows откройте «Параметры → Время и язык → Речь → Добавить голоса», установите «Español (México)» и перезапустите браузер. Либо откройте приложение в Microsoft Edge: там испанские голоса есть сразу.</p>') + "</section>" +
       '<section class="panel stack"><h2 class="sec">Данные</h2><p class="muted small">' + (Sync.state === "cloud" ? "Прогресс автоматически сохраняется в вашем аккаунте Claude и доступен на любом устройстве, где вы открываете это приложение." : "Прогресс хранится в этом браузере. Сделайте резервную копию, чтобы не потерять его при очистке данных браузера.") + "</p>" +
       '<div class="row"><button class="btn ghost sm" data-act="export-copy">Скопировать резервную копию</button><button class="btn ghost sm" data-act="export-file" data-needs-dl hidden>Сохранить файлом</button></div>' +
       '<textarea id="exportBox" readonly hidden></textarea>' +
@@ -1161,8 +1218,8 @@
   // ================================================================ события
   const ACT = {
     go: (b) => go(b.dataset.arg),
-    say: (b) => speak(b.dataset.text),
-    "say-slow": (b) => speak(b.dataset.text, true),
+    say: (b) => { if (Dlg.playing >= 0) stopPlay(); speak(b.dataset.text); },
+    "say-slow": (b) => { if (Dlg.playing >= 0) stopPlay(); speak(b.dataset.text, true); },
     "cards-start": () => startCards(),
     "cards-more": () => startCards({ extraNew: 10, onlyNew: true }),
     "cards-deck": (b) => startCards({ deck: b.dataset.arg, extraNew: 0 }),
@@ -1170,10 +1227,10 @@
     "cards-exit": () => { Cards.active = false; save(); render(); },
     flip: () => { Cards.shown = true; render(); if (S.settings.autoplay && Cards.front === "ru") speak(BY_ID.get(Cards.queue[Cards.pos].id).es); },
     grade: (b) => doGrade(Number(b.dataset.arg)),
-    "open-deck": (b) => { UI.deck = b.dataset.arg; render(); window.scrollTo(0, 0); },
+    "open-deck": (b) => { const dk = deckById(b.dataset.arg); if (dk && dk.words[0]) preload([dk.words[0][0]]); UI.deck = b.dataset.arg; render(); window.scrollTo(0, 0); },
     "back-words": () => { UI.deck = null; render(); },
     "deck-toggle": (b) => { const id = b.dataset.arg; S.settings.decksOff = b.checked ? S.settings.decksOff.filter((x) => x !== id) : S.settings.decksOff.concat([id]); save(); render(); },
-    "open-lesson": (b) => { route = "grammar"; UI.lesson = b.dataset.arg; Cards.active = P.active = false; syncHash(); render(); window.scrollTo(0, 0); },
+    "open-lesson": (b) => { preload([LESSONS[0].examples[0][0]]); route = "grammar"; UI.lesson = b.dataset.arg; Cards.active = P.active = false; syncHash(); render(); window.scrollTo(0, 0); },
     "back-grammar": () => { UI.lesson = null; render(); },
     quiz: (b) => answerQuiz(b.dataset.arg),
     "quiz-reset": (b) => { UI.quiz[b.dataset.arg] = {}; render(); const q = $("#quiz"); if (q) q.scrollIntoView({ block: "start" }); },
@@ -1208,7 +1265,7 @@
         : it.t === "dict" ? "записать на слух испанскую фразу" : it.t === "build" ? "собрать испанскую фразу с переводом «" + it.q + "»" : it.t === "type" ? "перевести на испанский «" + it.q + "»" : "выбрать перевод для «" + it.q + "»";
       await streamInto(out, "Ученик — русскоязычный, учит латиноамериканский испанский (" + country().ru + "), уровень " + S.settings.level + ". Задание: " + task + ". Правильный ответ: «" + right + "». Ответ ученика: «" + (it.given || "") + "».\nОбъясни по-русски в 2–4 коротких предложениях, в чём ошибка и как это запомнить. Если ответ ученика тоже допустим в Латинской Америке — так и скажи.", { modelTier: "quick" });
     },
-    "open-dialog": (b) => { route = "talk"; UI.talk = { mode: "dialog", id: b.dataset.arg }; Dlg.revealed = new Set(); stopPlay(); Cards.active = P.active = false; syncHash(); render(); window.scrollTo(0, 0); },
+    "open-dialog": (b) => { const dd = DIALOGS.find((x) => x.id === b.dataset.arg); if (dd) preload([dd.lines[0][1]]); route = "talk"; UI.talk = { mode: "dialog", id: b.dataset.arg }; Dlg.revealed = new Set(); stopPlay(); Cards.active = P.active = false; syncHash(); render(); window.scrollTo(0, 0); },
     "back-talk": () => { stopPlay(); UI.talk = { mode: "list", id: null }; render(); window.scrollTo(0, 0); },
     "play-all": () => playAll(DIALOGS.find((x) => x.id === UI.talk.id)),
     "dlg-tr": (b) => { Dlg.showTr = b.checked; $$("#lines .bubble:not(.hidden-line) .tr").forEach((p) => { p.hidden = !Dlg.showTr; }); },

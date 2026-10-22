@@ -4,4 +4,4 @@
 
 Открыть: https://qedefeated.github.io/espanol-mudanza/
 
-Статический сайт без сборки: index.html и скрипты с контентом (words.js, grammar.js, dialogs.js, verbs.js) и логикой (app.js). Прогресс хранится в браузере (localStorage).
+Статический сайт без сборки: index.html, скрипты с контентом (words.js, words-top.js, grammar.js, dialogs.js, verbs.js), логика (app.js) и записанная озвучка (audio/, нейроголоса с латиноамериканским произношением). Прогресс хранится в браузере (localStorage).
