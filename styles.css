@@ -274,8 +274,16 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .pic-tile .dot { position: absolute; top: 9px; right: 9px; width: 8px; height: 8px; border-radius: 3px; background: var(--surface-2); }
 .pic-tile .dot.learned { background: var(--accent); }
 .pic-tile .dot.learning { background: color-mix(in srgb, var(--accent) 40%, var(--surface-2)); }
+.options.pic-opts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pic-opt { justify-content: center; position: relative; padding: 16px 10px; }
+.pic-opt kbd { position: absolute; top: 8px; left: 8px; }
+.pic-opt .pic { font-size: 60px; }
 .q-pic { font-size: 104px; text-align: center; padding: 4px 0 8px; }
-@media (max-width: 480px) { .q-pic { font-size: 84px; } }
+@media (max-width: 480px) { .pic-opts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pic-opt { justify-content: center; position: relative; padding: 16px 10px; }
+.pic-opt kbd { position: absolute; top: 8px; left: 8px; }
+.pic-opt .pic { font-size: 60px; }
+.q-pic { font-size: 84px; } }
 .flash-answer .main-ans.ru { font-family: var(--f-body); font-weight: 600; font-size: 22px; }
 .example { display: grid; gap: 2px; max-width: 560px; }
 .example .es { font-size: 18px; }

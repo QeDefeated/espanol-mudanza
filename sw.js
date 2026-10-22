@@ -3,7 +3,7 @@
 //   shell-*  — оболочка приложения (HTML, CSS, JS, стартовый индекс), кэшируется при установке;
 //   data-*   — блоки данных и озвучка, кэшируются при первом обращении и не скачиваются при обновлении кода;
 //   fonts-*  — шрифты Google Fonts (показываются из кэша, обновляются в фоне).
-const SHELL = "shell-52efad9169";
+const SHELL = "shell-ba50b6b8f2";
 const DATA = "data-c108d37a2a";
 const FONTS = "fonts-v1";
 const PRECACHE = ["index.html","data/index.json","styles.css","verbs.js","js/util.js","js/config.js","js/audiokey.js","js/state.js","js/data.js","js/audio.js","js/ai.js","js/srs.js","js/goals.js","js/achievements.js","js/router.js","js/views/onboarding.js","js/views/today.js","js/views/words.js","js/views/cards.js","js/views/grammar.js","js/views/practice.js","js/views/dialogs.js","js/views/chat.js","js/views/progress.js","js/events.js","js/main.js"];
