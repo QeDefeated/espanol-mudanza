@@ -1,0 +1,43 @@
+// Постоянные настройки приложения: страны, уровни, время в день, виды упражнений.
+(function (App) {
+  "use strict";
+
+  const COUNTRIES = {
+    MX: { ru: "Мексика", es: "México", lang: "es-MX" },
+    CO: { ru: "Колумбия", es: "Colombia", lang: "es-CO" },
+    AR: { ru: "Аргентина", es: "Argentina", lang: "es-AR", voseo: true },
+    CL: { ru: "Чили", es: "Chile", lang: "es-CL" },
+    PE: { ru: "Перу", es: "Perú", lang: "es-PE" },
+    EC: { ru: "Эквадор", es: "Ecuador", lang: "es-EC" },
+    UY: { ru: "Уругвай", es: "Uruguay", lang: "es-UY", voseo: true },
+    CR: { ru: "Коста-Рика", es: "Costa Rica", lang: "es-CR" },
+    LA: { ru: "Латинская Америка в целом", es: "Latinoamérica", lang: "es-419" }
+  };
+
+  const PRACTICE_KINDS = [
+    { id: "choice", title: "Выбор перевода", ex: "el departamento → квартира", desc: "Быстро узнавать слова в обе стороны.", why: "Закрепить слова, которые вы начали учить.", min: 4 },
+    { id: "type", title: "Перевод на испанский", ex: "ключ → la llave", desc: "Вспомнить слово и написать его самому.", why: "Перевести слова из пассивного запаса в активный.", min: 5 },
+    { id: "build", title: "Собери фразу", ex: "¿ · Dónde · está · el · banco · ?", desc: "Порядок слов в живых фразах.", why: "Привыкнуть к порядку слов в настоящих фразах.", min: 5 },
+    { id: "dict", title: "Диктант", ex: "Слушаю и записываю", desc: "Понимание на слух: латиноамериканское произношение.", why: "Тренировка на слух: так говорят на улице и в учреждениях.", min: 6 },
+    { id: "conj", title: "Спряжения", ex: "tener · nosotros → tenemos", desc: "Тренажёр форм глаголов по выбранным временам.", why: "Без форм глаголов не построить фразу.", min: 5 },
+    { id: "errors", title: "Частые ошибки", ex: "Soy cansado → Estoy cansado", desc: "Выбрать правильный вариант из двух: типичные ловушки для русскоязычных.", why: "Типичные ловушки для русскоязычных: ser/estar, артикли, por/para.", min: 4 },
+    { id: "mist", title: "Работа над ошибками", ex: "Повторить то, где ошибся", desc: "Слова и формы, в которых вы ошибались.", why: "Повторить свои ошибки, пока они свежи.", min: 4 },
+    { id: "dlg", title: "Упражнения по диалогу", ex: "Фразы из одной сцены", desc: "Короткие задания по фразам одного диалога.", why: "", min: 4, hidden: true }
+  ];
+
+  App.cfg = {
+    COUNTRIES,
+    MINUTES: [15, 20, 30, 45, 60],
+    NEW_BY_MINUTES: { 15: 5, 20: 8, 30: 12, 45: 16, 60: 20 },
+    LEVELS: [
+      { id: "A1", title: "A1 — начинаю", sub: "Знаю пару фраз или начинаю с нуля" },
+      { id: "A2", title: "A2 — объясняюсь", sub: "Справляюсь в простых ситуациях: магазин, кафе, дорога" },
+      { id: "B1", title: "B1 — говорю", sub: "Могу поддержать разговор, хочу говорить увереннее" }
+    ],
+    DLG_LEVELS: ["Прослушал", "Могу повторить", "Могу сказать своими словами"],
+    GRADES: [["Не знаю", 0], ["Почти", 1], ["Знаю", 2]],
+    PRACTICE_KINDS,
+    kindById: (id) => PRACTICE_KINDS.find((k) => k.id === id),
+    country: () => COUNTRIES[App.S.settings.country] || COUNTRIES.MX
+  };
+})(window.App = window.App || {});
