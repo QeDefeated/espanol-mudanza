@@ -1,7 +1,7 @@
 // Топ-1000: слова 501–1000, отделы 6–10. Формат как в words-top.js.
 window.ES_DECKS = (window.ES_DECKS || []).concat([
   {
-    id: "top6", group: "top", title: "Топ-1000 · отдел 6", es: "Verbos de todos los días",
+    id: "top6", group: "top", title: "Топ-1500 · отдел 6", es: "Verbos de todos los días",
     words: [
       ["llenar", "наполнять; заполнять", "Llena la botella de agua.", "Наполни бутылку водой."],
       ["pasear", "гулять", "Me gusta pasear por el centro.", "Я люблю гулять по центру."],
@@ -106,7 +106,7 @@ window.ES_DECKS = (window.ES_DECKS || []).concat([
     ]
   },
   {
-    id: "top7", group: "top", title: "Топ-1000 · отдел 7", es: "Cosas, lugares y naturaleza",
+    id: "top7", group: "top", title: "Топ-1500 · отдел 7", es: "Cosas, lugares y naturaleza",
     words: [
       ["el árbol", "дерево", "Hay un árbol enfrente de la casa.", "Перед домом растёт дерево."],
       ["la flor", "цветок", "Le compré flores a mi esposa.", "Я купил жене цветы."],
@@ -211,7 +211,7 @@ window.ES_DECKS = (window.ES_DECKS || []).concat([
     ]
   },
   {
-    id: "top8", group: "top", title: "Топ-1000 · отдел 8", es: "Personas, sociedad y sentimientos",
+    id: "top8", group: "top", title: "Топ-1500 · отдел 8", es: "Personas, sociedad y sentimientos",
     words: [
       ["el abuelo / la abuela", "дедушка / бабушка", "Mi abuela cocina delicioso.", "Моя бабушка очень вкусно готовит."],
       ["el tío / la tía", "дядя / тётя", "Mi tío vive en Monterrey.", "Мой дядя живёт в Монтеррее."],
@@ -316,7 +316,7 @@ window.ES_DECKS = (window.ES_DECKS || []).concat([
     ]
   },
   {
-    id: "top9", group: "top", title: "Топ-1000 · отдел 9", es: "Cómo es, cómo está",
+    id: "top9", group: "top", title: "Топ-1500 · отдел 9", es: "Cómo es, cómo está",
     words: [
       ["callado", "молчаливый, тихий", "Hoy estás muy callado.", "Ты сегодня очень молчаливый."],
       ["amable", "любезный", "Gracias, muy amable.", "Спасибо, вы очень любезны."],
@@ -421,7 +421,7 @@ window.ES_DECKS = (window.ES_DECKS || []).concat([
     ]
   },
   {
-    id: "top10", group: "top", title: "Топ-1000 · отдел 10", es: "Expresiones y frases vivas",
+    id: "top10", group: "top", title: "Топ-1500 · отдел 10", es: "Expresiones y frases vivas",
     words: [
       ["¿Qué tal?", "как дела? как тебе?", "Hola, ¿qué tal?", "Привет, как дела?"],
       ["¿Cómo te va?", "как у тебя дела?", "¿Cómo te va en el trabajo nuevo?", "Как дела на новой работе?"],
