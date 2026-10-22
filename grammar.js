@@ -1,0 +1,414 @@
+// Уроки грамматики: короткое объяснение, таблицы, примеры, мини-тест.
+// В тесте a — индекс правильного варианта, e — пояснение.
+window.ES_LESSONS = [
+  {
+    id: "sounds", level: "A1", title: "Произношение и ударение", es: "Pronunciación",
+    intro: "<p>Испанский читается почти так, как пишется. В Латинской Америке есть важное отличие от Испании — <b>seseo</b>: буквы <i>c</i> (перед e, i) и <i>z</i> читаются как русское «с». <i>Cerveza</i> — «сэрвэса», а не «тэрвэта».</p><p>Ударение падает на предпоследний слог, если слово кончается на гласную, <i>n</i> или <i>s</i>; иначе — на последний. Если правило нарушается, ставят значок: <i>café, inglés, teléfono</i>.</p>",
+    tables: [{ cap: "Буквы, которые читаются не так, как в английском", head: ["Буква", "Звук", "Пример"], rows: [
+      ["h", "не читается", "hola — «ола»"],
+      ["j, g (перед e, i)", "мягкое «х»", "jugo — «хуго», gente — «хэнтэ»"],
+      ["ll, y", "«й» или «дж»; в Аргентине — «ш»", "calle — «кайе» / «каше»"],
+      ["ñ", "«нь»", "año — «аньо»"],
+      ["qu", "«к» (u не читается)", "queso — «кэсо»"],
+      ["gu (перед e, i)", "«г» (u не читается)", "guitarra — «гитарра»"],
+      ["r / rr", "одно / несколько касаний", "pero «но» / perro «собака»"],
+      ["c, z", "«с» (seseo)", "cinco — «синко», plaza — «пласа»"],
+      ["v", "как «б»", "vivir — «бибир»"]
+    ] }],
+    examples: [["La ciudad es muy bonita.", "Город очень красивый."], ["Quiero un jugo de naranja.", "Я хочу апельсиновый сок."], ["La calle está cerca.", "Улица рядом."], ["El año que viene me mudo.", "В следующем году я переезжаю."]],
+    tips: ["Слушайте каждое слово в карточках: озвучка подбирает латиноамериканский голос.", "Значок над гласной (tilde) меняет смысл: <i>si</i> «если» — <i>sí</i> «да», <i>tu</i> «твой» — <i>tú</i> «ты»."],
+    quiz: [
+      { q: "Как читается «hospital»?", o: ["хоспиталь", "оспиталь", "госпиталь"], a: 1, e: "Буква h в испанском не читается." },
+      { q: "Как в Латинской Америке читается «cerveza»?", o: ["сэрвэса", "тэрвэта", "кэрвэка"], a: 0, e: "Seseo: c и z звучат как «с»." },
+      { q: "Где ударение в слове «trabajo»?", o: ["TRA-ba-jo", "tra-BA-jo", "tra-ba-JO"], a: 1, e: "Кончается на гласную — ударение на предпоследний слог." },
+      { q: "Чем отличается «pero» от «perro»?", o: ["Ничем", "pero — «но», perro — «собака»", "pero — «собака», perro — «но»"], a: 1, e: "Одна r — одно касание, rr — раскатистое." },
+      { q: "Как читается «queso»?", o: ["квэсо", "кэсо", "куэсо"], a: 1, e: "В сочетании qu буква u не читается." }
+    ]
+  },
+  {
+    id: "articles", level: "A1", title: "Род и артикли", es: "El género y los artículos",
+    intro: "<p>У каждого существительного есть род — мужской или женский. Обычно на <b>-o</b> — мужской, на <b>-a</b> — женский. Род слова лучше учить сразу с артиклем: <i>el departamento, la casa</i>.</p><p>Определённый артикль (<i>el, la, los, las</i>) — «тот самый», известный предмет. Неопределённый (<i>un, una, unos, unas</i>) — «какой-то, один».</p>",
+    tables: [{ cap: "Артикли", head: ["", "Мужской", "Женский"], rows: [
+      ["Определённый, ед. ч.", "el banco", "la llave"],
+      ["Определённый, мн. ч.", "los bancos", "las llaves"],
+      ["Неопределённый, ед. ч.", "un banco", "una llave"],
+      ["Неопределённый, мн. ч.", "unos bancos", "unas llaves"]
+    ] }, { cap: "Частые исключения", head: ["Слово", "Род", "Почему"], rows: [
+      ["el día, el mapa", "мужской", "исключения на -a"],
+      ["el problema, el sistema, el idioma", "мужской", "слова греческого происхождения на -ma"],
+      ["la mano, la foto, la moto", "женский", "исключения на -o"],
+      ["el agua, el acta", "женский", "el — только ради звучания перед ударной a-: las aguas"],
+      ["la ciudad, la estación, la costumbre", "женский", "-dad, -ción, -umbre — всегда женский род"]
+    ] }],
+    examples: [["Busco un departamento.", "Я ищу (какую-нибудь) квартиру."], ["El departamento tiene dos recámaras.", "В (этой) квартире две спальни."], ["Tengo un problema con la llave.", "У меня проблема с ключом."], ["El agua está fría.", "Вода холодная."]],
+    tips: ["Множественное число: после гласной + s (casa → casas), после согласной + es (ciudad → ciudades).", "a + el = al, de + el = del: Voy al banco. Vengo del mercado."],
+    quiz: [
+      { q: "Выберите правильно: ___ problema", o: ["la", "el"], a: 1, e: "Problema — мужского рода, как sistema и idioma." },
+      { q: "Выберите правильно: ___ mano", o: ["el", "la"], a: 1, e: "Mano — женского рода, несмотря на -o." },
+      { q: "Как сказать «в банк»?", o: ["a el banco", "al banco", "a la banco"], a: 1, e: "a + el сливаются в al." },
+      { q: "Множественное число от «la ciudad»:", o: ["las ciudads", "las ciudades", "los ciudades"], a: 1, e: "После согласной добавляется -es." },
+      { q: "Выберите правильно: ___ agua fría", o: ["el", "la"], a: 0, e: "Перед ударным a- ставят el, но слово женского рода (fría)." }
+    ]
+  },
+  {
+    id: "pronouns", level: "A1", title: "Местоимения: tú, usted, ustedes", es: "Los pronombres",
+    intro: "<p>В Латинской Америке нет формы <i>vosotros</i>: ко всем «вам» во множественном числе, и к друзьям, и к незнакомым, обращаются <b>ustedes</b>, а глагол ставят в форму 3-го лица мн. ч. <i>¿Ustedes son de aquí?</i></p><p><b>Tú</b> — «ты», <b>usted</b> — «вы» одному человеку (глагол в 3-м лице ед. ч.). С незнакомыми людьми, в банке, у врача, с пожилыми говорите <i>usted</i>.</p><p>В Аргентине, Уругвае и частично в Центральной Америке вместо <i>tú</i> говорят <b>vos</b>: <i>vos tenés, vos sos</i>. Понимать это стоит, но говорить можно и через <i>tú</i>.</p>",
+    tables: [{ cap: "Личные местоимения", head: ["Лицо", "Ед. число", "Мн. число"], rows: [
+      ["1-е", "yo — я", "nosotros / nosotras — мы"],
+      ["2-е", "tú — ты; usted — вы (вежл.)", "ustedes — вы"],
+      ["3-е", "él — он; ella — она", "ellos — они (м.); ellas — они (ж.)"]
+    ] }, { cap: "Глагол ser с разными местоимениями", head: ["Местоимение", "Форма"], rows: [
+      ["yo", "soy"], ["tú", "eres (vos sos)"], ["él / ella / usted", "es"], ["nosotros", "somos"], ["ellos / ellas / ustedes", "son"]
+    ] }],
+    examples: [["¿Usted habla inglés?", "Вы говорите по-английски?"], ["¿Ustedes viven aquí?", "Вы (все) здесь живёте?"], ["¿Tú de dónde eres?", "А ты откуда?"], ["Vos sos de Rusia, ¿no?", "Ты ведь из России? (Аргентина)"]],
+    tips: ["Местоимение часто опускают: окончание глагола уже показывает лицо. <i>Trabajo en casa</i> — «(я) работаю дома».", "Если не уверены — начните с usted. Если собеседник перейдёт на tú, переходите тоже."],
+    quiz: [
+      { q: "Как спросить двух друзей «Вы идёте?» в Мексике?", o: ["¿Vais?", "¿Van?", "¿Vas?"], a: 1, e: "В Латинской Америке ustedes + форма 3-го лица мн. ч.: van." },
+      { q: "Врачу вы скажете:", o: ["¿Tú tienes cita libre?", "¿Usted tiene cita libre?"], a: 1, e: "С незнакомыми и в учреждениях — usted." },
+      { q: "«Vos tenés» — это:", o: ["ошибка", "аргентинский вариант «tú tienes»", "форма для «вы»"], a: 1, e: "Voseo: vos вместо tú." },
+      { q: "Какая форма глагола после usted?", o: ["как после tú", "как после él/ella", "как после yo"], a: 1, e: "Usted сочетается с 3-м лицом единственного числа." }
+    ]
+  },
+  {
+    id: "serestar", level: "A1", title: "Ser и estar", es: "Ser y estar",
+    intro: "<p>Оба глагола переводятся как «быть», но значат разное.</p><p><b>Ser</b> — что это, кто это, какое это по сути: профессия, национальность, характер, материал, время, цена в целом.</p><p><b>Estar</b> — где находится и в каком состоянии сейчас: настроение, самочувствие, временное состояние, результат.</p>",
+    tables: [{ cap: "Спряжение", head: ["", "ser", "estar"], rows: [
+      ["yo", "soy", "estoy"], ["tú", "eres", "estás"], ["él / usted", "es", "está"], ["nosotros", "somos", "estamos"], ["ellos / ustedes", "son", "están"]
+    ] }, { cap: "Когда что", head: ["ser", "estar"], rows: [
+      ["Soy programador. — профессия", "Estoy cansado. — состояние"],
+      ["Es de Rusia. — происхождение", "Está en la oficina. — местонахождение"],
+      ["La casa es grande. — свойство", "La casa está sucia. — состояние сейчас"],
+      ["Son las tres. — время", "Estamos listos. — готовность"],
+      ["Es aburrido. — он скучный человек", "Está aburrido. — ему скучно"]
+    ] }],
+    examples: [["Mi esposa es mexicana.", "Моя жена — мексиканка."], ["El banco está en la esquina.", "Банк на углу."], ["La comida está muy rica.", "Еда очень вкусная (сейчас, это блюдо)."], ["¿Dónde está la parada?", "Где остановка?"], ["La fiesta es en mi casa.", "Вечеринка (проходит) у меня дома."]],
+    tips: ["Местонахождение предмета — estar, но место события — ser: <i>La reunión es en la oficina.</i>", "Listo: <i>ser listo</i> — быть умным, <i>estar listo</i> — быть готовым."],
+    quiz: [
+      { q: "Yo ___ de Rusia.", o: ["soy", "estoy"], a: 0, e: "Происхождение — ser." },
+      { q: "¿Dónde ___ el metro?", o: ["es", "está"], a: 1, e: "Местонахождение — estar." },
+      { q: "Hoy ___ muy cansado.", o: ["soy", "estoy"], a: 1, e: "Временное состояние — estar." },
+      { q: "___ las ocho de la noche.", o: ["Son", "Están"], a: 0, e: "Время — ser." },
+      { q: "La sopa ___ fría, ¿me la calienta?", o: ["es", "está"], a: 1, e: "Состояние сейчас — estar." },
+      { q: "La junta ___ en la sala dos.", o: ["es", "está"], a: 0, e: "Место события (собрание проходит) — ser." }
+    ]
+  },
+  {
+    id: "hay", level: "A1", title: "Hay и estar", es: "Hay y estar",
+    intro: "<p><b>Hay</b> — «есть, имеется» (одна форма для ед. и мн. числа). Используйте, когда сообщаете, что что-то <i>существует</i> где-то: <i>Hay un banco cerca.</i></p><p><b>Estar</b> — когда говорите о <i>конкретном известном</i> предмете и его месте: <i>El banco está cerca.</i></p>",
+    tables: [{ cap: "Сравните", head: ["hay + un/una/число/без артикля", "el/la + estar"], rows: [
+      ["¿Hay una farmacia por aquí?", "¿Dónde está la farmacia?"],
+      ["Hay dos recámaras.", "Las recámaras están arriba."],
+      ["No hay agua caliente.", "El agua caliente está apagada."]
+    ] }],
+    examples: [["¿Hay wifi en el departamento?", "В квартире есть вайфай?"], ["Hay mucho tráfico hoy.", "Сегодня много пробок."], ["Hay que llenar este formulario.", "Нужно заполнить эту анкету."], ["El cajero está dentro del súper.", "Банкомат внутри супермаркета."]],
+    tips: ["<b>Hay que</b> + инфинитив = «нужно, надо (вообще)»: <i>Hay que pagar en la caja.</i>", "Прошедшее: <i>había</i> (было, фон), <i>hubo</i> (произошло): <i>Hubo un problema con el pago.</i>"],
+    quiz: [
+      { q: "¿___ un hospital cerca?", o: ["Hay", "Está"], a: 0, e: "Неопределённый предмет (un) — hay." },
+      { q: "¿Dónde ___ el hospital San Ángel?", o: ["hay", "está"], a: 1, e: "Конкретный известный предмет — estar." },
+      { q: "«Нужно принести паспорт»:", o: ["Hay que traer el pasaporte.", "Está que traer el pasaporte.", "Hay traer el pasaporte."], a: 0, e: "Hay que + инфинитив." },
+      { q: "En la cocina ___ dos ventanas.", o: ["hay", "están", "son"], a: 0, e: "Сообщаем, что есть два окна — hay." }
+    ]
+  },
+  {
+    id: "present", level: "A1", title: "Настоящее время: правильные глаголы", es: "Presente regular", drill: "pres",
+    intro: "<p>Глаголы делятся на три группы по окончанию инфинитива: <b>-ar</b>, <b>-er</b>, <b>-ir</b>. Отбрасываем окончание и добавляем личное.</p><p>Настоящее время используется и для привычек, и для ближайших планов: <i>Mañana trabajo en casa</i> — «завтра работаю из дома».</p>",
+    tables: [{ cap: "Окончания", head: ["", "hablar", "comer", "vivir"], rows: [
+      ["yo", "hablo", "como", "vivo"], ["tú", "hablas", "comes", "vives"], ["él / usted", "habla", "come", "vive"],
+      ["nosotros", "hablamos", "comemos", "vivimos"], ["ellos / ustedes", "hablan", "comen", "viven"]
+    ] }],
+    examples: [["Trabajo desde casa.", "Я работаю из дома."], ["¿Dónde vives?", "Где ты живёшь?"], ["Comemos a las tres.", "Мы обедаем в три."], ["¿Ustedes aceptan tarjeta?", "Вы принимаете карты?"], ["Mi jefe no habla ruso.", "Мой начальник не говорит по-русски."]],
+    tips: ["Отрицание — просто <b>no</b> перед глаголом: <i>No necesito bolsa.</i>", "Вопрос — та же фраза с вопросительной интонацией и знаками ¿…?"],
+    quiz: [
+      { q: "Yo ___ (trabajar) en una empresa.", o: ["trabaja", "trabajo", "trabajas"], a: 1, e: "yo → -o." },
+      { q: "Nosotros ___ (vivir) en el centro.", o: ["vivemos", "vivimos", "viven"], a: 1, e: "-ir: nosotros → -imos." },
+      { q: "¿Usted ___ (comer) carne?", o: ["comes", "come", "comen"], a: 1, e: "usted — как él: come." },
+      { q: "Ustedes ___ (necesitar) un aval.", o: ["necesitan", "necesitáis", "necesitamos"], a: 0, e: "ustedes → -an (без vosotros)." },
+      { q: "Как сказать «Я не говорю по-английски»?", o: ["No hablo inglés.", "Hablo no inglés.", "Yo no habla inglés."], a: 0, e: "no ставится перед глаголом." }
+    ]
+  },
+  {
+    id: "stemchange", level: "A1", title: "Глаголы с чередованием в корне", es: "Verbos con cambio de raíz", drill: "pres",
+    intro: "<p>У части глаголов гласная корня меняется <b>под ударением</b>: во всех формах настоящего времени, кроме <i>nosotros</i>. Это легко запомнить как «ботинок»: формы с изменением образуют его контур в таблице.</p>",
+    tables: [{ cap: "Три типа чередования", head: ["", "e → ie: querer", "o → ue: poder", "e → i: pedir"], rows: [
+      ["yo", "quiero", "puedo", "pido"], ["tú", "quieres", "puedes", "pides"], ["él / usted", "quiere", "puede", "pide"],
+      ["nosotros", "queremos", "podemos", "pedimos"], ["ellos / ustedes", "quieren", "pueden", "piden"]
+    ] }, { cap: "Частые глаголы", head: ["Тип", "Глаголы"], rows: [
+      ["e → ie", "pensar, empezar, cerrar, entender, preferir, sentir, querer, tener*, venir*"],
+      ["o → ue", "poder, volver, dormir, encontrar, costar, recordar, almorzar; jugar (u → ue)"],
+      ["e → i", "pedir, servir, repetir, seguir*, decir*"]
+    ] }],
+    examples: [["¿Puedo pagar con tarjeta?", "Можно оплатить картой?"], ["¿Cuánto cuesta el boleto?", "Сколько стоит билет?"], ["Quiero rentar un departamento.", "Я хочу снять квартиру."], ["Siempre pido tacos al pastor.", "Я всегда заказываю тако аль пастор."], ["¿A qué hora empieza la clase?", "Во сколько начинается занятие?"]],
+    tips: ["Звёздочкой отмечены глаголы, у которых ещё и неправильная форма yo: <i>tengo, vengo, sigo, digo</i>.", "<b>Querer</b> + инфинитив = «хотеть сделать», <b>poder</b> + инфинитив = «мочь сделать»."],
+    quiz: [
+      { q: "¿Tú ___ (poder) ayudarme?", o: ["podes", "puedes", "puedas"], a: 1, e: "o → ue под ударением: puedes." },
+      { q: "Nosotros ___ (querer) ver el departamento.", o: ["queremos", "quieremos"], a: 0, e: "В форме nosotros корень не меняется." },
+      { q: "El mesero ___ (servir) la comida.", o: ["serve", "sirve", "servie"], a: 1, e: "e → i: sirve." },
+      { q: "¿Cuánto ___ (costar) la renta?", o: ["costa", "cuesta", "cuesto"], a: 1, e: "o → ue: cuesta." },
+      { q: "Yo ___ (jugar) fútbol los sábados.", o: ["jugo", "juego", "juega"], a: 1, e: "jugar — единственный глагол с u → ue." }
+    ]
+  },
+  {
+    id: "irregular", level: "A1", title: "Неправильные глаголы и полезные конструкции", es: "Verbos irregulares", drill: "pres",
+    intro: "<p>Несколько самых частых глаголов спрягаются неправильно — их нужно просто выучить. У многих неправильна только форма <i>yo</i>: <i>hago, pongo, salgo, traigo, conozco, sé, doy, veo</i>.</p><p>Три конструкции, которые закрывают половину бытовых ситуаций: <b>tener que</b> + инф. — «должен, надо», <b>ir a</b> + инф. — «собираюсь», <b>acabar de</b> + инф. — «только что».</p>",
+    tables: [{ cap: "Главные неправильные глаголы", head: ["", "tener", "ir", "hacer", "decir", "venir"], rows: [
+      ["yo", "tengo", "voy", "hago", "digo", "vengo"], ["tú", "tienes", "vas", "haces", "dices", "vienes"],
+      ["él / usted", "tiene", "va", "hace", "dice", "viene"], ["nosotros", "tenemos", "vamos", "hacemos", "decimos", "venimos"],
+      ["ellos / ustedes", "tienen", "van", "hacen", "dicen", "vienen"]
+    ] }, { cap: "Конструкции", head: ["Конструкция", "Пример"], rows: [
+      ["tener que + inf. — надо", "Tengo que ir a migración."],
+      ["ir a + inf. — собираюсь", "Voy a abrir una cuenta."],
+      ["acabar de + inf. — только что", "Acabo de llegar."],
+      ["tener ganas de + inf. — хочется", "Tengo ganas de dormir."],
+      ["volver a + inf. — снова", "¿Puede volver a explicarlo?"]
+    ] }],
+    examples: [["Tengo que pagar la renta.", "Мне нужно заплатить за аренду."], ["Vamos a comer en el mercado.", "Мы собираемся поесть на рынке."], ["¿Qué haces mañana?", "Что ты делаешь завтра?"], ["Salgo a las siete.", "Я выхожу в семь."], ["No sé dónde está mi pasaporte.", "Я не знаю, где мой паспорт."]],
+    tips: ["В разговоре <i>ir a</i> + инфинитив почти полностью заменяет будущее время.", "<i>Saber</i> — знать факт или уметь, <i>conocer</i> — быть знакомым с человеком или местом: <i>No conozco la ciudad.</i>"],
+    quiz: [
+      { q: "Yo ___ (tener) una cita a las diez.", o: ["teno", "tengo", "tiene"], a: 1, e: "tener → tengo." },
+      { q: "«Мне нужно заполнить анкету»:", o: ["Tengo llenar el formulario.", "Tengo que llenar el formulario.", "Tengo de llenar el formulario."], a: 1, e: "tener que + инфинитив." },
+      { q: "Nosotros ___ a abrir una cuenta.", o: ["vamos", "vemos", "van"], a: 0, e: "ir a: vamos a." },
+      { q: "¿___ la ciudad? — Ты знаешь город?", o: ["Sabes", "Conoces"], a: 1, e: "Знакомство с местом — conocer." },
+      { q: "Yo no ___ (saber) manejar.", o: ["sabo", "sé", "sepo"], a: 1, e: "saber → sé." },
+      { q: "«Я только что приехал»:", o: ["Acabo de llegar.", "Acabo llegar.", "Termino de llegar."], a: 0, e: "acabar de + инфинитив." }
+    ]
+  },
+  {
+    id: "questions", level: "A1", title: "Вопросы", es: "Las preguntas",
+    intro: "<p>Вопросительное слово всегда с ударением: <i>qué, quién, dónde, cuándo, cuánto, cómo, cuál, por qué</i>. Вопрос пишется с двумя знаками: <b>¿…?</b></p><p>Предлог ставится перед вопросительным словом: <i>¿De dónde eres? ¿Con quién hablo? ¿A qué hora?</i></p>",
+    tables: [{ cap: "Вопросительные слова", head: ["Слово", "Значение", "Пример"], rows: [
+      ["¿Qué?", "что? какой?", "¿Qué necesito traer?"],
+      ["¿Cuál? / ¿Cuáles?", "какой (из)?", "¿Cuál es su dirección?"],
+      ["¿Quién?", "кто?", "¿Quién es el dueño?"],
+      ["¿Dónde? / ¿Adónde?", "где? / куда?", "¿Adónde va este camión?"],
+      ["¿Cuándo?", "когда?", "¿Cuándo puedo mudarme?"],
+      ["¿Cuánto / cuánta / cuántos?", "сколько?", "¿Cuántas recámaras tiene?"],
+      ["¿Cómo?", "как?", "¿Cómo llego al centro?"],
+      ["¿Por qué? — porque", "почему? — потому что", "¿Por qué no funciona?"],
+      ["¿A qué hora?", "во сколько?", "¿A qué hora cierran?"]
+    ] }],
+    examples: [["¿Cuál es la contraseña del wifi?", "Какой пароль от вайфая?"], ["¿Cuántos meses de depósito piden?", "Сколько месяцев залога просят?"], ["¿De quién es este carro?", "Чья это машина?"], ["¿Para qué es este formulario?", "Для чего эта анкета?"]],
+    tips: ["«Какой у вас адрес/номер/пароль?» — через <b>cuál</b>, не qué: <i>¿Cuál es su número?</i>", "Cuánto согласуется с существительным: <i>cuánto dinero, cuánta gente, cuántos días, cuántas horas</i>."],
+    quiz: [
+      { q: "___ es su número de teléfono?", o: ["¿Qué", "¿Cuál"], a: 1, e: "Конкретное значение из возможных — cuál." },
+      { q: "___ cuesta la recarga?", o: ["¿Cuánto", "¿Cuántos", "¿Cómo"], a: 0, e: "Цена — ¿cuánto cuesta?" },
+      { q: "«Откуда вы?»:", o: ["¿Dónde es usted?", "¿De dónde es usted?", "¿Dónde de es usted?"], a: 1, e: "Предлог перед вопросительным словом." },
+      { q: "___ recámaras tiene el departamento?", o: ["¿Cuántos", "¿Cuántas", "¿Cuánto"], a: 1, e: "Recámaras — женский род, мн. число." },
+      { q: "«Куда идёт этот автобус?»", o: ["¿Dónde va este camión?", "¿Adónde va este camión?"], a: 1, e: "Направление «куда» — adónde (в разговоре часто и dónde)." }
+    ]
+  },
+  {
+    id: "gustar", level: "A1", title: "Gustar и похожие глаголы", es: "Gustar",
+    intro: "<p><i>Gustar</i> устроен как русское «нравиться»: <b>мне</b> нравится <b>город</b>. Подлежащее — то, что нравится, поэтому глагол согласуется с ним: <i>me gusta</i> (одно), <i>me gustan</i> (много).</p><p>Так же работают: <i>encantar</i> (очень нравиться), <i>doler</i> (болеть), <i>molestar</i> (мешать), <i>faltar</i> (не хватать), <i>interesar</i>, <i>importar</i>.</p>",
+    tables: [{ cap: "Кому нравится", head: ["Кому", "Одно / действие", "Много"], rows: [
+      ["(a mí) me", "me gusta el café", "me gustan los tacos"],
+      ["(a ti) te", "te gusta bailar", "te gustan las playas"],
+      ["(a él / ella / usted) le", "le gusta la ciudad", "le gustan los perros"],
+      ["(a nosotros) nos", "nos gusta el barrio", "nos gustan los mercados"],
+      ["(a ellos / ustedes) les", "les gusta viajar", "les gustan las películas"]
+    ] }],
+    examples: [["Me encanta esta ciudad.", "Я обожаю этот город."], ["Me duele la cabeza.", "У меня болит голова."], ["Me duelen los pies.", "У меня болят ноги (ступни)."], ["Nos falta un documento.", "Нам не хватает одного документа."], ["¿Le molesta si abro la ventana?", "Вы не против, если я открою окно?"]],
+    tips: ["Уточнение «a mí, a ti, a usted» используют для контраста или ясности: <i>A mí me gusta, pero a ella no.</i>", "Вежливое желание: <b>me gustaría</b> + инфинитив — «мне бы хотелось»."],
+    quiz: [
+      { q: "Me ___ los mercados.", o: ["gusta", "gustan"], a: 1, e: "Нравятся рынки (мн. ч.) — gustan." },
+      { q: "¿A usted ___ gusta el picante?", o: ["te", "le", "lo"], a: 1, e: "usted → le." },
+      { q: "«У меня болит горло»:", o: ["Tengo dolor la garganta.", "Me duele la garganta.", "Yo duelo la garganta."], a: 1, e: "doler работает как gustar." },
+      { q: "Nos ___ dos fotos para el trámite.", o: ["falta", "faltan"], a: 1, e: "Не хватает двух фото — faltan." },
+      { q: "«Мне бы хотелось посмотреть квартиру»:", o: ["Me gustaría ver el departamento.", "Me gusto ver el departamento."], a: 0, e: "me gustaría + инфинитив." }
+    ]
+  },
+  {
+    id: "adjectives", level: "A1", title: "Прилагательные и притяжательные", es: "Adjetivos y posesivos",
+    intro: "<p>Прилагательное обычно стоит <b>после</b> существительного и согласуется с ним в роде и числе: <i>un departamento pequeño, unas casas pequeñas</i>.</p><p>Прилагательные на <i>-e</i> или согласную по родам не меняются: <i>una calle grande, un barrio grande</i>. Национальности на согласную получают -a: <i>ruso — rusa, español — española</i>.</p>",
+    tables: [{ cap: "Притяжательные местоимения (перед словом)", head: ["Чей", "Ед. ч.", "Мн. ч."], rows: [
+      ["мой", "mi casa", "mis llaves"], ["твой", "tu carro", "tus papás"], ["его, её, ваш, их", "su departamento", "sus documentos"],
+      ["наш", "nuestro barrio / nuestra calle", "nuestros vecinos / nuestras maletas"]
+    ] }],
+    examples: [["Es un barrio tranquilo y seguro.", "Это тихий и безопасный район."], ["Mis vecinas son muy amables.", "Мои соседки очень любезные."], ["¿Este es su pasaporte?", "Это ваш паспорт?"], ["Busco una recámara grande y luminosa.", "Ищу большую светлую спальню."]],
+    tips: ["<i>Su</i> многозначно: его, её, ваш, их. Если неясно, уточняют: <i>la casa de él, la casa de usted</i>.", "Bueno, malo, primero перед существительным мужского рода теряют -o: <i>un buen trabajo, el primer día</i>."],
+    quiz: [
+      { q: "Unas calles ___ (tranquilo)", o: ["tranquilo", "tranquilas", "tranquilos"], a: 1, e: "Женский род, мн. число." },
+      { q: "___ papás viven en Rusia. (мои)", o: ["Mi", "Mis", "Mío"], a: 1, e: "Множественное число — mis." },
+      { q: "Es un ___ trabajo.", o: ["bueno", "buen"], a: 1, e: "Перед существительным м. р. — buen." },
+      { q: "Mi vecina es ___ (ruso).", o: ["ruso", "rusa", "rusos"], a: 1, e: "Национальность согласуется по роду." }
+    ]
+  },
+  {
+    id: "reflexive", level: "A2", title: "Возвратные глаголы и распорядок дня", es: "Verbos reflexivos",
+    intro: "<p>Возвратные глаголы (с <i>-se</i>) показывают, что действие направлено на себя: <i>levantarse</i> — вставать, <i>llamarse</i> — зваться, <i>mudarse</i> — переезжать. Частица <i>-se</i> меняется по лицам и ставится перед глаголом.</p>",
+    tables: [{ cap: "Levantarse — вставать", head: ["Лицо", "Форма"], rows: [
+      ["yo", "me levanto"], ["tú", "te levantas"], ["él / usted", "se levanta"], ["nosotros", "nos levantamos"], ["ellos / ustedes", "se levantan"]
+    ] }, { cap: "Полезные возвратные глаголы", head: ["Глагол", "Значение"], rows: [
+      ["llamarse", "называться, зваться"], ["mudarse", "переезжать"], ["bañarse", "мыться, принимать душ"], ["acostarse (ue)", "ложиться спать"],
+      ["sentirse (ie)", "чувствовать себя"], ["quedarse", "оставаться"], ["irse", "уходить, уезжать"], ["acordarse de (ue)", "вспоминать, помнить"], ["preocuparse", "волноваться"]
+    ] }],
+    examples: [["Me levanto a las siete.", "Я встаю в семь."], ["Nos mudamos en enero.", "Мы переезжаем в январе."], ["¿Cómo te sientes?", "Как ты себя чувствуешь?"], ["Me voy, nos vemos mañana.", "Я ухожу, увидимся завтра."], ["No me acuerdo de su nombre.", "Я не помню, как его зовут."]],
+    tips: ["С инфинитивом частица может стоять в конце: <i>Voy a mudarme</i> = <i>Me voy a mudar</i>.", "<i>Ir</i> — идти куда-то, <i>irse</i> — уходить отсюда: <i>Ya me voy.</i>"],
+    quiz: [
+      { q: "Yo ___ llamo Iván.", o: ["se", "me", "te"], a: 1, e: "yo → me." },
+      { q: "¿A qué hora ___ levantan ustedes?", o: ["se", "nos", "les"], a: 0, e: "ustedes → se." },
+      { q: "«Мы переезжаем в марте»:", o: ["Mudamos en marzo.", "Nos mudamos en marzo.", "Se mudamos en marzo."], a: 1, e: "mudarse → nos mudamos." },
+      { q: "«Я уже ухожу»:", o: ["Ya voy.", "Ya me voy."], a: 1, e: "irse — уходить." }
+    ]
+  },
+  {
+    id: "objects", level: "A2", title: "Местоимения-дополнения: lo, la, le", es: "Pronombres de objeto",
+    intro: "<p>Чтобы не повторять существительное, его заменяют местоимением, которое ставят <b>перед</b> спряжённым глаголом.</p><p><b>Прямое</b> дополнение (кого? что?): <i>lo, la, los, las</i>. <b>Косвенное</b> (кому?): <i>le, les</i>. <i>Me, te, nos</i> — одинаковы для обоих.</p><p>Если встречаются два местоимения, <i>le/les</i> превращается в <b>se</b>: <i>Se lo doy</i> — «Я ему это даю».</p>",
+    tables: [{ cap: "Местоимения", head: ["", "Прямое (что?)", "Косвенное (кому?)"], rows: [
+      ["я", "me", "me"], ["ты", "te", "te"], ["он / она / вы", "lo / la", "le"], ["мы", "nos", "nos"], ["они / вы", "los / las", "les"]
+    ] }],
+    examples: [["—¿Tienes las llaves? —Sí, las tengo.", "— Ключи у тебя? — Да, у меня."], ["Le mando la dirección por WhatsApp.", "Отправлю вам адрес в WhatsApp."], ["¿Me lo puede escribir?", "Можете мне это написать?"], ["Se lo explico otra vez.", "Я вам объясню ещё раз."], ["¿El contrato? Lo firmamos mañana.", "Договор? Подпишем завтра."]],
+    tips: ["С инфинитивом и в утвердительном повелении местоимение пишется слитно в конце: <i>Quiero verlo. Dígamelo.</i>", "Порядок: сначала «кому», потом «что»: <i>me lo, te la, se los</i>."],
+    quiz: [
+      { q: "—¿Compraste el chip? —Sí, ___ compré.", o: ["la", "lo", "le"], a: 1, e: "El chip — мужской род, прямое дополнение: lo." },
+      { q: "___ mando un correo (вам, usted).", o: ["Lo", "Le", "Te"], a: 1, e: "Кому? — косвенное: le." },
+      { q: "Doy el recibo a la dueña → ___ doy.", o: ["Le lo", "Se lo", "Se la"], a: 1, e: "le + lo → se lo." },
+      { q: "«Хочу это купить»:", o: ["Quiero comprarlo.", "Lo quiero comprar.", "Оба варианта верны"], a: 2, e: "С инфинитивом допустимы обе позиции." }
+    ]
+  },
+  {
+    id: "preterite", level: "A2", title: "Прошедшее время: pretérito indefinido", es: "Pretérito indefinido", drill: "pret",
+    intro: "<p>Это основное прошедшее время в Латинской Америке для <b>законченных</b> действий: что произошло вчера, на прошлой неделе, в 2020 году, сегодня утром. В Мексике и Аргентине оно используется даже там, где в Испании скажут <i>he hecho</i>: <i>¿Ya comiste?</i> — «Ты уже поел?»</p>",
+    tables: [{ cap: "Правильные глаголы", head: ["", "hablar", "comer", "vivir"], rows: [
+      ["yo", "hablé", "comí", "viví"], ["tú", "hablaste", "comiste", "viviste"], ["él / usted", "habló", "comió", "vivió"],
+      ["nosotros", "hablamos", "comimos", "vivimos"], ["ellos / ustedes", "hablaron", "comieron", "vivieron"]
+    ] }, { cap: "Главные неправильные", head: ["Глагол", "yo", "él", "ellos"], rows: [
+      ["ser / ir", "fui", "fue", "fueron"], ["tener", "tuve", "tuvo", "tuvieron"], ["estar", "estuve", "estuvo", "estuvieron"],
+      ["hacer", "hice", "hizo", "hicieron"], ["poder", "pude", "pudo", "pudieron"], ["decir", "dije", "dijo", "dijeron"],
+      ["venir", "vine", "vino", "vinieron"], ["dar", "di", "dio", "dieron"], ["pedir", "pedí", "pidió", "pidieron"]
+    ] }],
+    examples: [["Ayer firmé el contrato.", "Вчера я подписал договор."], ["Llegamos a México en marzo.", "Мы приехали в Мексику в марте."], ["¿Ya pagaste la luz?", "Ты уже заплатил за свет?"], ["Fui al banco, pero estaba cerrado.", "Я сходил в банк, но он был закрыт."], ["No pude dormir por el ruido.", "Я не смог уснуть из-за шума."]],
+    tips: ["Ударение решает: <i>hablo</i> — я говорю, <i>habló</i> — он сказал.", "Орфография в форме yo: <i>buscar → busqué, pagar → pagué, empezar → empecé</i>.", "Ser и ir в прошедшем совпадают: <i>fue</i> = «был» или «пошёл» — понятно из контекста."],
+    quiz: [
+      { q: "Ayer yo ___ (pagar) la renta.", o: ["pagé", "pagué", "pagó"], a: 1, e: "g → gu перед é." },
+      { q: "¿Qué ___ (decir) el doctor?", o: ["decía", "dijo", "dició"], a: 1, e: "decir → dijo." },
+      { q: "Nosotros ___ (ir) a la playa el fin de semana.", o: ["fuimos", "íbamos", "fueron"], a: 0, e: "ir → fuimos." },
+      { q: "El mesero no ___ (traer) la cuenta.", o: ["traió", "trajo", "traé"], a: 1, e: "traer → traj- → trajo." },
+      { q: "Ellos ___ (pedir) un taxi.", o: ["pedieron", "pidieron", "pidaron"], a: 1, e: "e → i в 3-м лице: pidieron." },
+      { q: "«Ты уже поел?» по-мексикански:", o: ["¿Ya comiste?", "¿Ya comes?", "¿Ya comías?"], a: 0, e: "В Латинской Америке — indefinido." }
+    ]
+  },
+  {
+    id: "imperfect", level: "A2", title: "Imperfecto и indefinido", es: "Imperfecto vs. indefinido", drill: "impf",
+    intro: "<p><b>Imperfecto</b> — фон, описание и привычки в прошлом: как было, что обычно делали, что происходило, когда… <b>Indefinido</b> — события, которые случились и закончились.</p><p>Представьте фильм: imperfecto — декорации и фон, indefinido — то, что произошло в кадре.</p>",
+    tables: [{ cap: "Образование imperfecto", head: ["", "-ar: trabajar", "-er/-ir: vivir"], rows: [
+      ["yo", "trabajaba", "vivía"], ["tú", "trabajabas", "vivías"], ["él / usted", "trabajaba", "vivía"],
+      ["nosotros", "trabajábamos", "vivíamos"], ["ellos / ustedes", "trabajaban", "vivían"]
+    ] }, { cap: "Неправильных всего три", head: ["ser", "ir", "ver"], rows: [
+      ["era, eras, era, éramos, eran", "iba, ibas, iba, íbamos, iban", "veía, veías, veía, veíamos, veían"]
+    ] }, { cap: "Когда что", head: ["imperfecto", "indefinido"], rows: [
+      ["En Moscú vivía en un departamento chico. — описание", "En 2024 me mudé a México. — событие"],
+      ["Llovía y hacía frío. — фон", "De repente se fue la luz. — что случилось"],
+      ["Siempre comíamos a las dos. — привычка", "Ayer comimos a las cuatro. — один раз"]
+    ] }],
+    examples: [["Cuando vivía en Rusia, trabajaba en un banco.", "Когда я жил в России, я работал в банке."], ["Estaba en la ducha cuando sonó el timbre.", "Я был в душе, когда позвонили в дверь."], ["Antes no hablaba nada de español.", "Раньше я совсем не говорил по-испански."], ["Era tarde y no había taxis.", "Было поздно, и такси не было."]],
+    tips: ["Слова-подсказки imperfecto: <i>antes, siempre, todos los días, cuando era niño, normalmente</i>.", "Слова-подсказки indefinido: <i>ayer, el año pasado, en 2023, una vez, de repente</i>.", "Вежливая просьба через imperfecto: <i>Quería preguntar…</i> — «Я хотел спросить…»."],
+    quiz: [
+      { q: "Cuando ___ (ser) niño, vivía en Kazán.", o: ["fui", "era"], a: 1, e: "Описание прошлого — imperfecto." },
+      { q: "Ayer ___ (llegar) el técnico a las diez.", o: ["llegaba", "llegó"], a: 1, e: "Однократное событие — indefinido." },
+      { q: "Antes siempre ___ (tomar) el metro.", o: ["tomé", "tomaba"], a: 1, e: "Привычка — imperfecto." },
+      { q: "Estaba en el súper cuando me ___ (llamar) mi jefe.", o: ["llamó", "llamaba"], a: 0, e: "Событие на фоне — indefinido." },
+      { q: "___ (hacer) mucho calor y no había agua.", o: ["Hizo", "Hacía"], a: 1, e: "Фон, описание — imperfecto." }
+    ]
+  },
+  {
+    id: "perfect", level: "A2", title: "Pretérito perfecto и причастия", es: "Pretérito perfecto", drill: "perf",
+    intro: "<p><b>Haber + причастие</b>: <i>he comido, has llegado</i>. Говорит об опыте в жизни и о том, что произошло к настоящему моменту: <i>¿Has estado en Oaxaca?</i> — «Ты бывал в Оахаке?»</p><p>В Латинской Америке это время используют реже, чем в Испании: про «сегодня» и «уже» чаще говорят через indefinido. Но в вопросах об опыте и в официальном языке оно встречается постоянно: <i>Su solicitud ha sido aprobada.</i></p>",
+    tables: [{ cap: "Haber + participio", head: ["Лицо", "haber", "Пример"], rows: [
+      ["yo", "he", "he vivido"], ["tú", "has", "has trabajado"], ["él / usted", "ha", "ha llegado"], ["nosotros", "hemos", "hemos visto"], ["ellos / ustedes", "han", "han pagado"]
+    ] }, { cap: "Неправильные причастия", head: ["Инфинитив", "Причастие"], rows: [
+      ["hacer", "hecho"], ["decir", "dicho"], ["ver", "visto"], ["poner", "puesto"], ["volver", "vuelto"], ["escribir", "escrito"], ["abrir", "abierto"], ["romper", "roto"], ["morir", "muerto"]
+    ] }],
+    examples: [["Nunca he manejado en esta ciudad.", "Я никогда не водил машину в этом городе."], ["¿Has probado el mole?", "Ты пробовал моле?"], ["Todavía no he recibido la tarjeta.", "Я ещё не получил карту."], ["La ventana está rota.", "Окно разбито."]],
+    tips: ["Причастие может работать как прилагательное и согласуется: <i>la puerta está abierta, los documentos están firmados</i>.", "Между haber и причастием ничего не вставляют: <i>Ya lo he hecho</i>, а не «he lo hecho»."],
+    quiz: [
+      { q: "¿___ estado en Guadalajara? (tú)", o: ["Has", "Ha", "Hemos"], a: 0, e: "tú → has." },
+      { q: "Причастие от «hacer»:", o: ["hacido", "hecho", "hizo"], a: 1, e: "hacer → hecho." },
+      { q: "Todavía no he ___ (ver) el departamento.", o: ["veído", "visto", "vido"], a: 1, e: "ver → visto." },
+      { q: "La tienda está ___ (abrir).", o: ["abrida", "abierta", "abierto"], a: 1, e: "Причастие согласуется: la tienda → abierta." }
+    ]
+  },
+  {
+    id: "future", level: "A2", title: "Будущее и вежливые просьбы", es: "Futuro y condicional", drill: "cond",
+    intro: "<p>Для планов в разговоре используют <b>ir a + инфинитив</b>: <i>Voy a buscar trabajo.</i> Простое будущее (<i>trabajaré</i>) звучит более официально или выражает предположение: <i>¿Dónde estará mi llave?</i> — «Где же мой ключ?»</p><p><b>Condicional</b> (форма на <i>-ía</i>) — это русское «бы». Главный бытовой инструмент вежливости: <i>¿Podría…? Me gustaría… ¿Sería posible…?</i></p>",
+    tables: [{ cap: "Окончания (добавляются к инфинитиву)", head: ["Лицо", "Futuro", "Condicional"], rows: [
+      ["yo", "hablaré", "hablaría"], ["tú", "hablarás", "hablarías"], ["él / usted", "hablará", "hablaría"], ["nosotros", "hablaremos", "hablaríamos"], ["ellos / ustedes", "hablarán", "hablarían"]
+    ] }, { cap: "Неправильные основы (общие для обоих времён)", head: ["Глагол", "Основа", "Пример"], rows: [
+      ["tener", "tendr-", "tendré, tendría"], ["poder", "podr-", "podré, podría"], ["hacer", "har-", "haré, haría"], ["decir", "dir-", "diré, diría"],
+      ["venir", "vendr-", "vendré, vendría"], ["salir", "saldr-", "saldré, saldría"], ["querer", "querr-", "querré, querría"], ["saber", "sabr-", "sabré, sabría"], ["poner", "pondr-", "pondré, pondría"]
+    ] }],
+    examples: [["¿Podría hablar más despacio?", "Не могли бы вы говорить медленнее?"], ["Me gustaría hacer una cita.", "Я хотел бы записаться."], ["¿Sería posible pagar en dos partes?", "Можно ли было бы заплатить в два этапа?"], ["El técnico vendrá el lunes.", "Мастер придёт в понедельник."], ["Voy a renovar la visa en mayo.", "Я буду продлевать визу в мае."]],
+    tips: ["Вместо резкого <i>Quiero…</i> в магазине и учреждениях говорите <i>Quisiera…</i> или <i>Me gustaría…</i>", "<i>Deberías</i> + инфинитив — мягкий совет: <i>Deberías abrir una cuenta aquí.</i>"],
+    quiz: [
+      { q: "¿___ (poder) ayudarme, por favor? — вежливо", o: ["Puede", "Podría", "Podrá"], a: 1, e: "Вежливая просьба — condicional." },
+      { q: "Mañana ___ (tener) la respuesta. (yo)", o: ["teneré", "tendré", "tendría"], a: 1, e: "tener → tendr- + é." },
+      { q: "«Я хотел бы открыть счёт»:", o: ["Me gustaría abrir una cuenta.", "Me gusto abrir una cuenta.", "Me gustará abrir una cuenta."], a: 0, e: "me gustaría + инфинитив." },
+      { q: "El paquete ___ (llegar) el viernes.", o: ["llegará", "llegaré", "llegaría"], a: 0, e: "él → -á." }
+    ]
+  },
+  {
+    id: "porpara", level: "A2", title: "Por и para", es: "Por y para",
+    intro: "<p>Оба предлога часто переводятся «для» или «за», но логика разная.</p><p><b>Para</b> — цель, получатель, направление, срок: «для чего, для кого, куда, к какому сроку».</p><p><b>Por</b> — причина, обмен, путь, время суток, способ: «из-за чего, за сколько, через что, по чему».</p>",
+    tables: [{ cap: "Употребление", head: ["para", "por"], rows: [
+      ["Цель: Estudio español para trabajar aquí.", "Причина: No dormí por el ruido."],
+      ["Получатель: Es un regalo para mi vecina.", "Цена, обмен: Lo compré por cien pesos."],
+      ["Направление: Salgo para el aeropuerto.", "Путь: Pasamos por el centro."],
+      ["Срок: Lo necesito para el lunes.", "Время суток: Trabajo por la mañana."],
+      ["Мнение: Para mí, es caro.", "Средство: Te lo mando por correo."]
+    ] }],
+    examples: [["Gracias por todo.", "Спасибо за всё."], ["Es para llevar.", "Это с собой."], ["¿Me lo manda por WhatsApp?", "Пришлёте мне в WhatsApp?"], ["Necesito el documento para el trámite.", "Мне нужен документ для оформления."], ["Pago doce mil por mes.", "Я плачу двенадцать тысяч в месяц."]],
+    tips: ["Устойчивые выражения с por: <i>por favor, por fin, por ejemplo, por supuesto, por eso</i>.", "<i>¿Para qué?</i> — зачем, с какой целью; <i>¿Por qué?</i> — почему, по какой причине."],
+    quiz: [
+      { q: "Gracias ___ su ayuda.", o: ["para", "por"], a: 1, e: "Благодарность за что-то — por." },
+      { q: "Este paquete es ___ usted.", o: ["para", "por"], a: 0, e: "Получатель — para." },
+      { q: "Compré la bici ___ dos mil pesos.", o: ["para", "por"], a: 1, e: "Обмен, цена — por." },
+      { q: "Necesito el reporte ___ el viernes.", o: ["para", "por"], a: 0, e: "Срок — para." },
+      { q: "Estudio español ___ conseguir trabajo.", o: ["para", "por"], a: 0, e: "Цель — para." }
+    ]
+  },
+  {
+    id: "imperative", level: "A2", title: "Повелительное наклонение", es: "El imperativo", drill: "imp",
+    intro: "<p>Императив нужен, чтобы понимать указания («поверните налево», «подпишите здесь») и самому просить.</p><p>Для <b>usted</b> и <b>ustedes</b> глагол «меняет гласную окончания»: -ar → <i>-e/-en</i>, -er/-ir → <i>-a/-an</i>. Основа берётся от формы <i>yo</i>: <i>tengo → tenga, hago → haga</i>.</p><p>Для <b>tú</b> утвердительный императив совпадает с формой «он» настоящего времени: <i>habla, come, firma</i>. Есть 8 коротких исключений.</p>",
+    tables: [{ cap: "Утвердительный императив", head: ["Инфинитив", "tú", "usted", "ustedes"], rows: [
+      ["firmar", "firma", "firme", "firmen"], ["esperar", "espera", "espere", "esperen"], ["subir", "sube", "suba", "suban"], ["tener", "ten", "tenga", "tengan"], ["seguir", "sigue", "siga", "sigan"]
+    ] }, { cap: "Исключения для tú", head: ["Инфинитив", "tú", "Пример"], rows: [
+      ["decir", "di", "Dime la verdad."], ["hacer", "haz", "Haz la lista."], ["ir", "ve", "Ve al súper."], ["poner", "pon", "Pon la mesa."],
+      ["salir", "sal", "Sal de ahí."], ["ser", "sé", "Sé paciente."], ["tener", "ten", "Ten cuidado."], ["venir", "ven", "Ven aquí."]
+    ] }],
+    examples: [["Siga derecho y dé vuelta a la izquierda.", "Идите прямо и поверните налево."], ["Firme aquí, por favor.", "Подпишите здесь, пожалуйста."], ["Espere un momento.", "Подождите минутку."], ["Pasen, por favor.", "Проходите, пожалуйста."], ["Mándame la ubicación.", "Скинь мне геолокацию."]],
+    tips: ["Местоимения в утвердительном императиве пишутся слитно: <i>dígame, mándamelo, siéntese</i>.", "Отрицательный императив строится через субхунтив: <i>no firme, no esperes, no se preocupe</i>."],
+    quiz: [
+      { q: "«Подождите здесь» (usted):", o: ["Espera aquí.", "Espere aquí.", "Esperar aquí."], a: 1, e: "-ar → -e для usted." },
+      { q: "«Иди сюда» (tú):", o: ["Viene aquí.", "Ven aquí.", "Venga aquí."], a: 1, e: "venir → ven." },
+      { q: "Водителю: «Остановите на углу» (parar, usted):", o: ["Pare en la esquina.", "Para en la esquina.", "Pára en la esquina."], a: 0, e: "parar → pare." },
+      { q: "«Не волнуйтесь» (usted):", o: ["No se preocupe.", "No preocúpese.", "No se preocupa."], a: 0, e: "Отрицание — через субхунтив, местоимение перед глаголом." },
+      { q: "Группе людей: «Проходите»", o: ["Pasad.", "Pasen.", "Pasan."], a: 1, e: "ustedes → -en." }
+    ]
+  },
+  {
+    id: "subjunctive", level: "B1", title: "Субхунтив: первые шаги", es: "El subjuntivo", drill: "subj",
+    intro: "<p>Субхунтив — особая форма глагола для желаний, просьб, чувств и неуверенности. Без него не обойтись в бытовых фразах: <i>Quiero que me ayudes. Ojalá que llueva. Cuando llegues, avísame.</i></p><p>Образуется как императив для usted: основа <i>yo</i> + «противоположная» гласная. -ar → <i>-e</i>, -er/-ir → <i>-a</i>.</p>",
+    tables: [{ cap: "Presente de subjuntivo", head: ["", "hablar", "comer", "tener"], rows: [
+      ["yo", "hable", "coma", "tenga"], ["tú", "hables", "comas", "tengas"], ["él / usted", "hable", "coma", "tenga"], ["nosotros", "hablemos", "comamos", "tengamos"], ["ellos / ustedes", "hablen", "coman", "tengan"]
+    ] }, { cap: "Когда нужен субхунтив", head: ["Триггер", "Пример"], rows: [
+      ["querer que — хотеть, чтобы", "Quiero que vengas mañana."],
+      ["necesitar que, pedir que", "Necesito que me firme aquí."],
+      ["ojalá (que) — хоть бы", "Ojalá que me den la visa."],
+      ["para que — чтобы", "Te lo mando para que lo leas."],
+      ["cuando + будущее", "Cuando llegues, mándame un mensaje."],
+      ["es importante / es necesario que", "Es necesario que traiga el original."],
+      ["me alegra que, espero que", "Espero que te guste el barrio."]
+    ] }, { cap: "Неправильные", head: ["Глагол", "Форма"], rows: [
+      ["ser", "sea"], ["estar", "esté"], ["ir", "vaya"], ["saber", "sepa"], ["dar", "dé"], ["haber", "haya"]
+    ] }],
+    examples: [["Quiero que me expliques el contrato.", "Я хочу, чтобы ты объяснил мне договор."], ["Ojalá que encuentre trabajo pronto.", "Надеюсь, я скоро найду работу."], ["Cuando tenga la tarjeta, abro la cuenta.", "Когда у меня будет карта, открою счёт."], ["Es importante que llegue temprano.", "Важно, чтобы вы пришли пораньше."], ["¡Que te vaya bien!", "Удачи! (Пусть у тебя всё будет хорошо!)"]],
+    tips: ["Если субъект один, субхунтив не нужен: <i>Quiero ir</i> (я хочу пойти), но <i>Quiero que vayas</i> (хочу, чтобы ты пошёл).", "Вопрос о будущем через cuándo — индикатив: <i>¿Cuándo llegas?</i> Придаточное «когда…» о будущем — субхунтив: <i>Cuando llegues…</i>", "Пожелания с <i>que</i>: <i>¡Que te mejores! ¡Que descanses! ¡Que tengas buen viaje!</i>"],
+    quiz: [
+      { q: "Quiero que tú ___ (venir) a las cinco.", o: ["vienes", "vengas", "venir"], a: 1, e: "querer que + субхунтив: vengas." },
+      { q: "Ojalá que no ___ (llover) mañana.", o: ["llueve", "llueva", "llover"], a: 1, e: "ojalá + субхунтив." },
+      { q: "Cuando ___ (llegar), avísame.", o: ["llegas", "llegues", "llegarás"], a: 1, e: "cuando + будущее → субхунтив: llegues." },
+      { q: "Quiero ___ (ir) al mercado. (сам)", o: ["vaya", "ir", "que vaya"], a: 1, e: "Один субъект — инфинитив." },
+      { q: "Es necesario que usted ___ (traer) dos copias.", o: ["trae", "traiga", "traer"], a: 1, e: "Основа yo (traigo) → traiga." },
+      { q: "«Выздоравливай!»:", o: ["¡Que te mejoras!", "¡Que te mejores!", "¡Mejorarte!"], a: 1, e: "Пожелание: que + субхунтив." }
+    ]
+  }
+];
